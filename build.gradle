@@ -5,12 +5,13 @@ buildscript {
         mavenCentral()
 
         maven {
-            url '../ZRunTrace/plugins'
+            // 用1个点，当前build.gradle已经在根目录下
+            url './plugins'
         }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
-
+        // classpath '[groupId]:[artifactId]:[version]'
         classpath 'cc.banzhi.runtrace:RunTracePlugin:1.0.0'
 
         // NOTE: Do not place your application dependencies here; they belong
