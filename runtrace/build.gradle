@@ -1,0 +1,54 @@
+apply plugin: 'groovy' // groovy插件
+apply plugin: 'maven-publish' // Maven发布
+
+
+dependencies {
+    // 依赖gradle API
+    implementation gradleApi()
+    // 依赖groovy SDK
+    implementation localGroovy()
+
+    // Transform相关
+    implementation 'com.android.tools.build:gradle:4.2.2'
+}
+
+repositories {
+    google()
+    mavenCentral() // 资源库
+}
+
+// 将插件打包上传到本地maven仓库
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'cc.banzhi.runtrace' // 组
+            artifactId = 'RunTracePlugin' // 唯一标示
+            version = '1.0.0' // 版本
+
+            // 打包源码和class
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            // 指定本地maven的路径，..表示在项目根目录下
+            url '../plugins'
+        }
+    }
+}
+
+//gradle旧版本
+//// 导出插件
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            pom.groupId = 'cc.banzhi.runtrace'
+//            pom.artifactId = 'RunTracePlugin'
+//            pom.version = '1.0.0'
+//            // 指定本地maven的路径，..表示在项目根目录下。
+//            // 当然也可以设置远程服务器，这里不进行说明。
+//            repository(url: uri('../plugins'))
+//        }
+//    }
+//}
