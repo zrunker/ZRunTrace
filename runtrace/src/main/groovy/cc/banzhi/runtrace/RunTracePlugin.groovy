@@ -8,6 +8,7 @@ class RunTracePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
+        project.
         // 定义名RunTraceTask的任务
         project.task("RunTraceTask") {
             printf("自定义插件，执行RunTraceTask")

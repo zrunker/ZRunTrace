@@ -1,0 +1,69 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "cc.banzhi.runtrace",
+    "module": "RunTracePlugin",
+    "version": "1.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "RunTracePlugin-1.0.0.jar",
+          "url": "RunTracePlugin-1.0.0.jar",
+          "size": 4819,
+          "sha512": "be2377ffa7e33aeefd247b0003595aa6bf7ad2a8ab8329ee762ab568341a3584bac74c67e69a0198de0a1efa6dda4813acfc087f36ba61b360dde8002403e19a",
+          "sha256": "3acc8c7dae6b7dc8a6a48a2203386f834f9eac622ae5fc63f266a22dd8cc9387",
+          "sha1": "580c021e0ee5bb2144fd3edefc54590538c3a2e3",
+          "md5": "b8560487de1e1e77a77a202fbb095378"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.android.tools.build",
+          "module": "gradle",
+          "version": {
+            "requires": "4.2.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "RunTracePlugin-1.0.0.jar",
+          "url": "RunTracePlugin-1.0.0.jar",
+          "size": 4819,
+          "sha512": "be2377ffa7e33aeefd247b0003595aa6bf7ad2a8ab8329ee762ab568341a3584bac74c67e69a0198de0a1efa6dda4813acfc087f36ba61b360dde8002403e19a",
+          "sha256": "3acc8c7dae6b7dc8a6a48a2203386f834f9eac622ae5fc63f266a22dd8cc9387",
+          "sha1": "580c021e0ee5bb2144fd3edefc54590538c3a2e3",
+          "md5": "b8560487de1e1e77a77a202fbb095378"
+        }
+      ]
+    }
+  ]
+}
