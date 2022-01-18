@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+// 引入自定义插件
 apply plugin: 'cc.banzhi.runtrace'
 
 android {
