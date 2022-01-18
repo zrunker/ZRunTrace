@@ -2,7 +2,6 @@ package cc.banzhi.runtrace
 
 import cc.banzhi.runtrace.transforms.RunTraceTransform
 import com.android.build.gradle.AppExtension
-import com.android.build.gradle.BaseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
