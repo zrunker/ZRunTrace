@@ -27,11 +27,11 @@
         {
           "name": "RunTracePlugin-1.0.0.jar",
           "url": "RunTracePlugin-1.0.0.jar",
-          "size": 4819,
-          "sha512": "be2377ffa7e33aeefd247b0003595aa6bf7ad2a8ab8329ee762ab568341a3584bac74c67e69a0198de0a1efa6dda4813acfc087f36ba61b360dde8002403e19a",
-          "sha256": "3acc8c7dae6b7dc8a6a48a2203386f834f9eac622ae5fc63f266a22dd8cc9387",
-          "sha1": "580c021e0ee5bb2144fd3edefc54590538c3a2e3",
-          "md5": "b8560487de1e1e77a77a202fbb095378"
+          "size": 5313,
+          "sha512": "5e8c813cc8b1c4ee81b2235da0a60ae9d00e17b3be7508ad6f4555a649954e050bf4cc1b0b020fe41f20b0d284ead02c8f1e613fa3b826de3b495527e3467a57",
+          "sha256": "6438c801b74d6525fe45b181bab112a5bb44dc84fc45f410d63fec480b070028",
+          "sha1": "7831c7c4fb9d5df6d801d207dd9f2c9d6f55f6b2",
+          "md5": "6e4afd6cb827753fb74b6b2a1cfb6461"
         }
       ]
     },
@@ -57,11 +57,11 @@
         {
           "name": "RunTracePlugin-1.0.0.jar",
           "url": "RunTracePlugin-1.0.0.jar",
-          "size": 4819,
-          "sha512": "be2377ffa7e33aeefd247b0003595aa6bf7ad2a8ab8329ee762ab568341a3584bac74c67e69a0198de0a1efa6dda4813acfc087f36ba61b360dde8002403e19a",
-          "sha256": "3acc8c7dae6b7dc8a6a48a2203386f834f9eac622ae5fc63f266a22dd8cc9387",
-          "sha1": "580c021e0ee5bb2144fd3edefc54590538c3a2e3",
-          "md5": "b8560487de1e1e77a77a202fbb095378"
+          "size": 5313,
+          "sha512": "5e8c813cc8b1c4ee81b2235da0a60ae9d00e17b3be7508ad6f4555a649954e050bf4cc1b0b020fe41f20b0d284ead02c8f1e613fa3b826de3b495527e3467a57",
+          "sha256": "6438c801b74d6525fe45b181bab112a5bb44dc84fc45f410d63fec480b070028",
+          "sha1": "7831c7c4fb9d5df6d801d207dd9f2c9d6f55f6b2",
+          "md5": "6e4afd6cb827753fb74b6b2a1cfb6461"
         }
       ]
     }

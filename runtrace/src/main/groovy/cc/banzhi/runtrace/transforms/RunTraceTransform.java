@@ -3,11 +3,10 @@ package cc.banzhi.runtrace.transforms;
 
 import com.android.build.api.transform.QualifiedContent;
 import com.android.build.api.transform.Transform;
-import com.android.build.api.transform.TransformException;
 import com.android.build.api.transform.TransformInput;
+import com.android.build.api.transform.TransformException;
 import com.android.build.api.transform.TransformInvocation;
 import com.android.build.gradle.internal.pipeline.TransformManager;
-import com.android.ddmlib.Log;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -61,7 +60,7 @@ public class RunTraceTransform extends Transform {
     public void transform(TransformInvocation transformInvocation)
             throws TransformException, InterruptedException, IOException {
         super.transform(transformInvocation);
-        Log.d("RunTraceTransform", "执行RunTraceTransform");
+        System.out.println("执行RunTraceTransform");
         Collection<TransformInput> inputs = transformInvocation.getInputs();
         for (TransformInput input : inputs) {
             input.getJarInputs();
