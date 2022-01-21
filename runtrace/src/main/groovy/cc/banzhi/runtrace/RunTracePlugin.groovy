@@ -19,7 +19,7 @@ class RunTracePlugin implements Plugin<Project> {
         // AppExtension <- AbstractAppExtension <- TestedExtension <- BaseExtension
         // 这里直接获取BaseExtension进行注册也是可以的
         AppExtension app = project.extensions.getByType(AppExtension)
-        // BaseExtension内部维护着_transforms集合，registerTransform是将TraceTransform添加到集合内
+        // BaseExtension内部维护着_transforms集合，registerTransform是将TraceTransform实例添加到集合内
         app.registerTransform(new RunTraceTransform())
     }
 }
