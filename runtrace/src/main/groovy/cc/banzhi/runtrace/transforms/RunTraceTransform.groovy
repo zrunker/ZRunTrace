@@ -16,12 +16,12 @@ import java.util.Set;
  * @author: zoufengli01
  * @create: 2022/1/13 5:11 下午
  **/
-public class RunTraceTransform extends Transform {
+class RunTraceTransform extends Transform {
     /**
      * 为Transform定义一个唯一的名称
      */
     @Override
-    public String getName() {
+    String getName() {
         return "RunTraceTransform";
     }
 
@@ -29,7 +29,8 @@ public class RunTraceTransform extends Transform {
      * 定义Transform接收的输入文件类型
      */
     @Override
-    public Set<QualifiedContent.ContentType> getInputTypes() {
+    Set<QualifiedContent.ContentType> getInputTypes() {
+        // Class文件
         return TransformManager.CONTENT_CLASS;
     }
 
@@ -37,7 +38,7 @@ public class RunTraceTransform extends Transform {
      * 定义Transform的作用域
      */
     @Override
-    public Set<? super QualifiedContent.Scope> getScopes() {
+    Set<? super QualifiedContent.Scope> getScopes() {
         return TransformManager.SCOPE_FULL_PROJECT;
     }
 
@@ -45,7 +46,7 @@ public class RunTraceTransform extends Transform {
      * 是否支持增量
      */
     @Override
-    public boolean isIncremental() {
+    boolean isIncremental() {
         return false;
     }
 
@@ -53,8 +54,9 @@ public class RunTraceTransform extends Transform {
      * Transform的执行主函数
      */
     @Override
-    public void transform(TransformInvocation transformInvocation)
+    void transform(TransformInvocation transformInvocation)
             throws TransformException, InterruptedException, IOException {
         super.transform(transformInvocation);
+
     }
 }
