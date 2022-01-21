@@ -4,10 +4,13 @@ package cc.banzhi.runtrace.transforms;
 import com.android.build.api.transform.QualifiedContent;
 import com.android.build.api.transform.Transform;
 import com.android.build.api.transform.TransformException;
+import com.android.build.api.transform.TransformInput;
 import com.android.build.api.transform.TransformInvocation;
 import com.android.build.gradle.internal.pipeline.TransformManager;
+import com.android.ddmlib.Log;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -16,12 +19,12 @@ import java.util.Set;
  * @author: zoufengli01
  * @create: 2022/1/13 5:11 下午
  **/
-class RunTraceTransform extends Transform {
+public class RunTraceTransform extends Transform {
     /**
      * 为Transform定义一个唯一的名称
      */
     @Override
-    String getName() {
+    public String getName() {
         return "RunTraceTransform";
     }
 
@@ -29,8 +32,8 @@ class RunTraceTransform extends Transform {
      * 定义Transform接收的输入文件类型
      */
     @Override
-    Set<QualifiedContent.ContentType> getInputTypes() {
-        // Class文件
+    public Set<QualifiedContent.ContentType> getInputTypes() {
+        // Class
         return TransformManager.CONTENT_CLASS;
     }
 
@@ -38,7 +41,8 @@ class RunTraceTransform extends Transform {
      * 定义Transform的作用域
      */
     @Override
-    Set<? super QualifiedContent.Scope> getScopes() {
+    public Set<? super QualifiedContent.Scope> getScopes() {
+        // 整个项目
         return TransformManager.SCOPE_FULL_PROJECT;
     }
 
@@ -46,7 +50,7 @@ class RunTraceTransform extends Transform {
      * 是否支持增量
      */
     @Override
-    boolean isIncremental() {
+    public boolean isIncremental() {
         return false;
     }
 
@@ -54,9 +58,15 @@ class RunTraceTransform extends Transform {
      * Transform的执行主函数
      */
     @Override
-    void transform(TransformInvocation transformInvocation)
+    public void transform(TransformInvocation transformInvocation)
             throws TransformException, InterruptedException, IOException {
         super.transform(transformInvocation);
+        Log.d("RunTraceTransform", "执行RunTraceTransform");
+        Collection<TransformInput> inputs = transformInvocation.getInputs();
+        for (TransformInput input : inputs) {
+            input.getJarInputs();
 
+            input.getDirectoryInputs();
+        }
     }
 }
