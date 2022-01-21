@@ -53,7 +53,8 @@ public class RunTraceTransform extends Transform {
      * Transform的执行主函数
      */
     @Override
-    public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
+    public void transform(TransformInvocation transformInvocation)
+            throws TransformException, InterruptedException, IOException {
         super.transform(transformInvocation);
     }
 }
