@@ -1,6 +1,8 @@
 package cc.banzhi.runtrace.transforms;
 
 
+import com.android.build.api.transform.DirectoryInput;
+import com.android.build.api.transform.JarInput;
 import com.android.build.api.transform.QualifiedContent;
 import com.android.build.api.transform.Transform;
 import com.android.build.api.transform.TransformInput;
@@ -60,12 +62,18 @@ public class RunTraceTransform extends Transform {
     public void transform(TransformInvocation transformInvocation)
             throws TransformException, InterruptedException, IOException {
         super.transform(transformInvocation);
-        System.out.println("执行RunTraceTransform");
+        System.out.println("执行------RunTraceTransform");
         Collection<TransformInput> inputs = transformInvocation.getInputs();
         for (TransformInput input : inputs) {
-            input.getJarInputs();
+            Collection<JarInput> jarInputs = input.getJarInputs();
+            for (JarInput jarInput : jarInputs) {
+                System.out.println("" + jarInput.getName());
+            }
 
-            input.getDirectoryInputs();
+            Collection<DirectoryInput> directoryInputs = input.getDirectoryInputs();
+            for (DirectoryInput dirInput : directoryInputs) {
+                System.out.println("" + dirInput.getName());
+            }
         }
     }
 }
