@@ -10,7 +10,8 @@
   },
   "createdBy": {
     "gradle": {
-      "version": "7.2"
+      "version": "6.7.1",
+      "buildId": "tjia3jiqwrba3ge4aup5stcx3m"
     }
   },
   "variants": [
@@ -27,11 +28,11 @@
         {
           "name": "RunTracePlugin-1.0.0.jar",
           "url": "RunTracePlugin-1.0.0.jar",
-          "size": 5313,
-          "sha512": "5e8c813cc8b1c4ee81b2235da0a60ae9d00e17b3be7508ad6f4555a649954e050bf4cc1b0b020fe41f20b0d284ead02c8f1e613fa3b826de3b495527e3467a57",
-          "sha256": "6438c801b74d6525fe45b181bab112a5bb44dc84fc45f410d63fec480b070028",
-          "sha1": "7831c7c4fb9d5df6d801d207dd9f2c9d6f55f6b2",
-          "md5": "6e4afd6cb827753fb74b6b2a1cfb6461"
+          "size": 18781,
+          "sha512": "37565a4d02fb6fadb877661d385d45bf52b2146f33a615f0d67889eeb62a0735b6a2174170b97b35188bf13c2fd17e1f8471174330102451562e7faccc791ad8",
+          "sha256": "fc6a824e8d374796044fb84825ed6aa33d7eb233159808e88c6ba8f0f616bd17",
+          "sha1": "f98b1ee54264c54b0564035906220c9e8e140d72",
+          "md5": "72f481332c3bb79cb838b881a2e8f1b7"
         }
       ]
     },
@@ -49,7 +50,21 @@
           "group": "com.android.tools.build",
           "module": "gradle",
           "version": {
-            "requires": "4.2.2"
+            "requires": "4.2.1"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm",
+          "version": {
+            "requires": "9.2"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm-commons",
+          "version": {
+            "requires": "9.2"
           }
         }
       ],
@@ -57,11 +72,11 @@
         {
           "name": "RunTracePlugin-1.0.0.jar",
           "url": "RunTracePlugin-1.0.0.jar",
-          "size": 5313,
-          "sha512": "5e8c813cc8b1c4ee81b2235da0a60ae9d00e17b3be7508ad6f4555a649954e050bf4cc1b0b020fe41f20b0d284ead02c8f1e613fa3b826de3b495527e3467a57",
-          "sha256": "6438c801b74d6525fe45b181bab112a5bb44dc84fc45f410d63fec480b070028",
-          "sha1": "7831c7c4fb9d5df6d801d207dd9f2c9d6f55f6b2",
-          "md5": "6e4afd6cb827753fb74b6b2a1cfb6461"
+          "size": 18781,
+          "sha512": "37565a4d02fb6fadb877661d385d45bf52b2146f33a615f0d67889eeb62a0735b6a2174170b97b35188bf13c2fd17e1f8471174330102451562e7faccc791ad8",
+          "sha256": "fc6a824e8d374796044fb84825ed6aa33d7eb233159808e88c6ba8f0f616bd17",
+          "sha1": "f98b1ee54264c54b0564035906220c9e8e140d72",
+          "md5": "72f481332c3bb79cb838b881a2e8f1b7"
         }
       ]
     }

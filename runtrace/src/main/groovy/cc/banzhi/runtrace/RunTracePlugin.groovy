@@ -1,6 +1,6 @@
 package cc.banzhi.runtrace
 
-import cc.banzhi.runtrace.transforms.RunTraceTransform
+import cc.banzhi.runtrace.transform.RunTraceTransform
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project

@@ -1,9 +1,9 @@
-package cc.banzhi.runtrace.core;
+package cc.banzhi.runtrace_api;
+
+import android.util.Log;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @program: ZRunTrace
@@ -13,6 +13,18 @@ import java.util.Map;
  **/
 @Target(ElementType.METHOD)
 public @interface RunTrace {
+    // 日志tag - 默认类名
     String tag() default "Trace";
+
+    // 日志级别
+    int level() default Log.INFO;
+
+    // 描述信息
     String desc() default "";
+
+    // 是否开启统计方法执行时间
+    boolean enableTime() default false;
+
+    // 是否上传网络
+    boolean enableUpload() default false;
 }
