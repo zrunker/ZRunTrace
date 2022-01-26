@@ -11,7 +11,7 @@ import java.util.Set;
 
 import cc.banzhi.runtrace_api.RunTrace;
 import cc.banzhi.zruntrace.asmtest.Test;
-
+@RunTrace
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
         init(12345.90f);
         init(true);
     }
+
+    public void init(){}
 
     @RunTrace(desc = "测试", level = Log.VERBOSE, enableTime = true, enableUpload = true)
     private void init(String name, int index) {

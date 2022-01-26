@@ -5,8 +5,9 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-import cc.banzhi.runtrace.transform.cache.AnalyzeMethodCache;
 import cc.banzhi.runtrace.transform.analyze.dto.AnalyzeMethodBean;
+import cc.banzhi.runtrace.transform.cache.AnalyzeMethodCache;
+import cc.banzhi.runtrace.transform.cache.Constants;
 
 /**
  * @program: ZRunTrace
@@ -21,30 +22,41 @@ public class AnalyzeMethodVisitor extends MethodVisitor {
     private final AnalyzeMethodBean analyzeMethodBean;
 
     public AnalyzeMethodVisitor(int api, MethodVisitor methodVisitor,
-                                String className, int access, String name, String descriptor) {
+                                String className, int access, String name, String descriptor, boolean isRunTrace) {
         super(api, methodVisitor);
-        analyzeMethodBean = new AnalyzeMethodBean(className, name, descriptor,
+        this.isRunTrace = isRunTrace;
+        this.analyzeMethodBean = new AnalyzeMethodBean(className, name, descriptor,
                 access, (access & Opcodes.ACC_STATIC) != 0);
     }
 
     @Override
-    public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        isRunTrace = descriptor.endsWith("RunTrace;");
+    public void visitEnd() {
         if (isRunTrace && analyzeMethodBean != null) {
             AnalyzeMethodCache.put(analyzeMethodBean.createKey(), analyzeMethodBean);
         }
-        return new AnalyzeAnnotationVisitor(Opcodes.ASM7);
+        super.visitEnd();
+    }
+
+    @Override
+    public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+        if (!isRunTrace) {
+            isRunTrace = Constants.ANNOTATION_NAME.equals(descriptor);
+        }
+        if (isRunTrace && analyzeMethodBean != null) {
+            return new MethodAnnotationVisitor(Opcodes.ASM7);
+        }
+        return super.visitAnnotation(descriptor, visible);
     }
 
     /**
-     * 在方法访问之后执行
+     * 在visitAnnotation访问之后执行
      */
     @Override
     public void visitLocalVariable(String name, String descriptor, String signature,
                                    Label start, Label end, int index) {
-         if (isRunTrace && analyzeMethodBean != null) {
-             // 非静态方法第一个参数为this
-             analyzeMethodBean.putVariableList(name, descriptor, index);
+        if (isRunTrace && analyzeMethodBean != null) {
+            // 非静态方法第一个参数为this
+            analyzeMethodBean.putVariableList(name, descriptor, index);
         }
         super.visitLocalVariable(name, descriptor, signature, start, end, index);
     }
@@ -52,8 +64,8 @@ public class AnalyzeMethodVisitor extends MethodVisitor {
     /**
      * 内部类解析方法注解
      */
-    private class AnalyzeAnnotationVisitor extends AnnotationVisitor {
-        public AnalyzeAnnotationVisitor(int api) {
+    private class MethodAnnotationVisitor extends AnnotationVisitor {
+        public MethodAnnotationVisitor(int api) {
             super(api);
         }
 

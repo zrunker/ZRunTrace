@@ -39,7 +39,7 @@ public class AnalyzeMethodBean {
         this.annotationMap.put("extras", null);
         this.annotationMap.put("enableTime", false);
         this.annotationMap.put("enableUpload", false);
-        // 初始化变量
+        // 初始化变量集合
         this.variableList = new ArrayList<>();
     }
 
@@ -49,13 +49,15 @@ public class AnalyzeMethodBean {
     }
 
     public void putAnnotationMap(String key, Object obj) {
-        if (key != null && obj != null) {
+        if (key != null && !"".equals(key)
+                && obj != null && !"".equals(obj)) {
             this.annotationMap.put(key, obj);
         }
     }
 
     public void putVariableList(String name, String descriptor, int index) {
-        if (name != null && descriptor != null && index >= 0) {
+        if (name != null && !"".equals(name)
+                && descriptor != null && !"".equals(descriptor) && index >= 0) {
             AnalyzeVariableBean data = new AnalyzeVariableBean(name, descriptor, index);
             this.variableList.add(data);
         }

@@ -4,8 +4,8 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-import cc.banzhi.runtrace.transform.cache.AnalyzeMethodCache;
 import cc.banzhi.runtrace.transform.analyze.dto.AnalyzeMethodBean;
+import cc.banzhi.runtrace.transform.cache.AnalyzeMethodCache;
 
 /**
  * @program: ZRunTrace
@@ -35,8 +35,7 @@ public class GenerateClassVisitor extends ClassVisitor {
         if (analyzeMethodBean != null) {
             return new GenerateMethodVisitor(Opcodes.ASM7,
                     cv.visitMethod(access, name, descriptor, signature, exceptions), analyzeMethodBean);
-        } else {
-            return super.visitMethod(access, name, descriptor, signature, exceptions);
         }
+        return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
 }

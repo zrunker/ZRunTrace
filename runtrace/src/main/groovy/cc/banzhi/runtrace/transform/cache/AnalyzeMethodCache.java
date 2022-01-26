@@ -15,13 +15,13 @@ public class AnalyzeMethodCache {
     private static final Map<String, AnalyzeMethodBean> methodMap = new HashMap<>();
 
     public static void put(String key, AnalyzeMethodBean data) {
-        if (data != null && key != null) {
+        if (data != null && key != null && !"".equals(key)) {
             methodMap.put(key, data);
         }
     }
 
     public static AnalyzeMethodBean get(String key) {
-        if (key != null) {
+        if (key != null && !"".equals(key)) {
             return methodMap.get(key);
         }
         return null;

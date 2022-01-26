@@ -1,8 +1,11 @@
 package cc.banzhi.runtrace.transform.analyze;
 
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+
+import cc.banzhi.runtrace.transform.cache.Constants;
 
 /**
  * @program: ZRunTrace
@@ -11,6 +14,8 @@ import org.objectweb.asm.Opcodes;
  * @create: 2022/1/24 4:22 下午
  **/
 public class AnalyzeClassVisitor extends ClassVisitor {
+    // 是否Trace
+    private boolean isRunTrace;
     // Class名称
     private String className;
 
@@ -28,8 +33,15 @@ public class AnalyzeClassVisitor extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor,
                                      String signature, String[] exceptions) {
+        // name = "<init>" 构造时执行
         return new AnalyzeMethodVisitor(Opcodes.ASM7,
                 super.visitMethod(access, name, descriptor, signature, exceptions),
-                className, access, name, descriptor);
+                className, access, name, descriptor, isRunTrace);
+    }
+
+    @Override
+    public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+        isRunTrace = Constants.ANNOTATION_NAME.equals(descriptor);
+        return super.visitAnnotation(descriptor, visible);
     }
 }

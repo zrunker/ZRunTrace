@@ -15,10 +15,10 @@ import java.util.Map;
  * @create: 2022/1/21 3:16 下午
  **/
 @Retention(RetentionPolicy.CLASS)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.TYPE})
 public @interface RunTrace {
     // 日志tag - 默认类名
-    String tag() default "Trace";
+    String tag() default "";
 
     // 日志级别
     int level() default Log.INFO;
