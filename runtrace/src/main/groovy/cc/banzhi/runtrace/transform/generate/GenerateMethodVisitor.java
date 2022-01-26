@@ -26,6 +26,10 @@ public class GenerateMethodVisitor extends MethodVisitor {
     // 定义统计开始时间-局部变量表位置
     private int startTimeIndex;
 
+    private boolean isNotEmpty(Object value) {
+        return value != null && !"".equals(value);
+    }
+
     public GenerateMethodVisitor(int api, MethodVisitor methodVisitor,
                                  AnalyzeMethodBean analyzeMethodBean) {
         super(api, methodVisitor);
@@ -34,6 +38,9 @@ public class GenerateMethodVisitor extends MethodVisitor {
             System.out.println(analyzeMethodBean.toString());
             this.annotationMap = analyzeMethodBean.getAnnotationMap();
             this.tag = annotationMap.get("tag");
+            if (!isNotEmpty(this.tag)) {
+                this.tag = analyzeMethodBean.getClassName();
+            }
             // 非静态方法第一个参数为this
             this.isStatic = analyzeMethodBean.isStatic();
         }
@@ -75,7 +82,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
      * @param desc 描述信息
      */
     private void generateDesc(Object desc) {
-        if (desc != null && desc != "") {
+        if (isNotEmpty(desc)) {
             mv.visitLdcInsn(tag);
             mv.visitLdcInsn(desc);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log",
@@ -99,6 +106,24 @@ public class GenerateMethodVisitor extends MethodVisitor {
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/HashMap",
                     "<init>", "()V", false);
             mv.visitVarInsn(Opcodes.ASTORE, index);
+
+            mv.visitVarInsn(Opcodes.ALOAD, index);
+            mv.visitLdcInsn("source");
+            mv.visitLdcInsn(analyzeMethodBean.getClassName() + "#"
+                    + analyzeMethodBean.getName() + analyzeMethodBean.getDescriptor());
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put",
+                    "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
+            mv.visitInsn(Opcodes.POP);
+
+            Object extras = annotationMap.get("extras");
+            if (isNotEmpty(extras)) {
+                mv.visitVarInsn(Opcodes.ALOAD, index);
+                mv.visitLdcInsn("extras");
+                mv.visitLdcInsn(extras);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put",
+                        "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
+                mv.visitInsn(Opcodes.POP);
+            }
 
 //            mv.visitVarInsn(Opcodes.ALOAD, index);
 //            mv.visitLdcInsn("desc");

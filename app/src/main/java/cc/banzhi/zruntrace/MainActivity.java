@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "这是一个测试信息 - 4 name = " + name);
     }
 
-    @RunTrace
+    @RunTrace(extras = "json")
     public void start(List<String> list) {
     }
 

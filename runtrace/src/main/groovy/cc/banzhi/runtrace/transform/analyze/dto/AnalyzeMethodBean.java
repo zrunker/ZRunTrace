@@ -35,6 +35,8 @@ public class AnalyzeMethodBean {
         this.annotationMap.put("tag", className);
         this.annotationMap.put("level", 4);
         this.annotationMap.put("desc", null);
+        this.annotationMap.put("source", null);
+        this.annotationMap.put("extras", null);
         this.annotationMap.put("enableTime", false);
         this.annotationMap.put("enableUpload", false);
         // 初始化变量
@@ -79,6 +81,10 @@ public class AnalyzeMethodBean {
 
     public boolean isStatic() {
         return isStatic;
+    }
+
+    public String getClassName() {
+        return className;
     }
 
     public String getDescriptor() {
