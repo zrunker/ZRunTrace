@@ -42,6 +42,7 @@ public class AnalyzeClassVisitor extends ClassVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         isRunTrace = Constants.ANNOTATION_NAME.equals(descriptor);
+        // TODO 解析注解
         return super.visitAnnotation(descriptor, visible);
     }
 }
