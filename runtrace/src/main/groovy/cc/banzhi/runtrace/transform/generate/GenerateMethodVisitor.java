@@ -109,7 +109,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
      * 生成参数日志
      */
     private void generateLog() {
-        if (variableList != null && variableList.size() > 0) {
+//        if (variableList != null && variableList.size() > 0) {
             mv.visitTypeInsn(Opcodes.NEW, "java/util/HashMap");
             mv.visitInsn(Opcodes.DUP);
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/HashMap",
@@ -117,7 +117,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
             mv.visitVarInsn(Opcodes.ASTORE, localVarPosition);
 
             mv.visitVarInsn(Opcodes.ALOAD, localVarPosition);
-            mv.visitLdcInsn("source");
+            mv.visitLdcInsn("traceSource");
             mv.visitLdcInsn(analyzeMethodBean.getClassName() + "#"
                     + analyzeMethodBean.getName() + analyzeMethodBean.getDescriptor());
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put",
@@ -125,7 +125,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
             mv.visitInsn(Opcodes.POP);
 
             mv.visitVarInsn(Opcodes.ALOAD, localVarPosition);
-            mv.visitLdcInsn("executeTime");
+            mv.visitLdcInsn("traceTime");
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/utils/DateUtil",
                     "getCurrentTime", "()Ljava/lang/String;", false);
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put",
@@ -145,7 +145,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
             // 方法参数的个数，非静态方法第一个参数为this
             int offset = isStatic ? 0 : 1;
             int paramSize = argumentArrays.length + offset;
-            if (variableList.size() >= paramSize) {
+            if (variableList != null && variableList.size() >= paramSize) {
                 for (int i = 0; i < paramSize; i++) {
                     AnalyzeVariableBean item = variableList.get(i);
                     String name = item.getName();
@@ -177,7 +177,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
             mv.visitVarInsn(Opcodes.ALOAD, localVarPosition);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/RunTraceObserver",
                     "runTrace", "(Ljava/lang/String;IZLjava/util/HashMap;)V", false);
-        }
+//        }
     }
 
     /**

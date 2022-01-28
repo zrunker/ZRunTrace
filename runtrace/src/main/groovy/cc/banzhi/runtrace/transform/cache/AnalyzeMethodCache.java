@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cc.banzhi.runtrace.transform.analyze.dto.AnalyzeMethodBean;
+import cc.banzhi.runtrace.transform.utils.TransformUtil;
 
 /**
  * @program: ZRunTrace
@@ -15,13 +16,13 @@ public class AnalyzeMethodCache {
     private static final Map<String, AnalyzeMethodBean> methodMap = new HashMap<>();
 
     public static void put(String key, AnalyzeMethodBean data) {
-        if (data != null && key != null && !"".equals(key)) {
+        if (data != null && TransformUtil.isNotEmpty(key)) {
             methodMap.put(key, data);
         }
     }
 
     public static AnalyzeMethodBean get(String key) {
-        if (key != null && !"".equals(key)) {
+        if (TransformUtil.isNotEmpty(key)) {
             return methodMap.get(key);
         }
         return null;
@@ -29,6 +30,6 @@ public class AnalyzeMethodCache {
 
     // 生成缓存key
     public static String transKey(String className, String name, String descriptor) {
-        return "className-" + className + "name-" + name + "descriptor-" + descriptor;
+        return "className-" + className + ";name-" + name + ";descriptor-" + descriptor;
     }
 }
