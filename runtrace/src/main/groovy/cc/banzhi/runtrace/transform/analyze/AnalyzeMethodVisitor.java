@@ -55,7 +55,7 @@ public class AnalyzeMethodVisitor extends MethodVisitor {
     public void visitLocalVariable(String name, String descriptor, String signature,
                                    Label start, Label end, int index) {
         if (isRunTrace && analyzeMethodBean != null) {
-            // 非静态方法第一个参数为this
+            // 包括 非静态方法第一个参数this
             analyzeMethodBean.putVariableList(name, descriptor, index);
         }
         super.visitLocalVariable(name, descriptor, signature, start, end, index);

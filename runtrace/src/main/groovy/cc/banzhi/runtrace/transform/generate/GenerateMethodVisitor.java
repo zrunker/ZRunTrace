@@ -30,6 +30,9 @@ public class GenerateMethodVisitor extends MethodVisitor {
     // 局部变量表中数量/位置
     private int localVarPosition;
 
+//    // 统计时间【局部变量表】开始位置
+//    private int startTimeIndex;
+
     private boolean isNotEmpty(Object value) {
         return value != null && !"".equals(value);
     }
@@ -62,6 +65,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
 
             boolean enableTime = (boolean) annotationMap.get("enableTime");
             if (enableTime) {
+//                startTimeIndex = localVarPosition + 1;
                 generateTimeStart();
             }
         }
@@ -139,30 +143,30 @@ public class GenerateMethodVisitor extends MethodVisitor {
                 mv.visitInsn(Opcodes.POP);
             }
 
-            // 方法参数的个数
+            // 方法参数的个数，非静态方法第一个参数为this
             int offset = isStatic ? 0 : 1;
             int paramSize = argumentArrays.length + offset;
-            System.out.println(paramSize);
-            for (int i = 0; i < paramSize; i++) {
-                AnalyzeVariableBean item = variableList.get(i);
-                String name = item.getName();
-                String descriptor = item.getDescriptor();
-                for (Type type : argumentArrays) {
-                    System.out.println(type.getClassName());
-                    if (descriptor.equals(type.getDescriptor())
-                            && !"this".equals(name)) {
-                        mv.visitVarInsn(Opcodes.ALOAD, localVarPosition);
-                        mv.visitLdcInsn(name);
-                        int opCode = Type.getType(descriptor).getOpcode(Opcodes.ILOAD);
-                        mv.visitVarInsn(opCode, item.getIndex());
-                        if (opCode != Opcodes.ALOAD) {
-                            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/utils/TypeUtil",
-                                    "toObj", "(" + descriptor + ")Ljava/lang/Object;", false);
+            if (variableList.size() >= paramSize) {
+                for (int i = 0; i < paramSize; i++) {
+                    AnalyzeVariableBean item = variableList.get(i);
+                    String name = item.getName();
+                    String descriptor = item.getDescriptor();
+                    for (Type type : argumentArrays) {
+                        if (descriptor.equals(type.getDescriptor())
+                                && !"this".equals(name)) {
+                            mv.visitVarInsn(Opcodes.ALOAD, localVarPosition);
+                            mv.visitLdcInsn(name);
+                            int opCode = Type.getType(descriptor).getOpcode(Opcodes.ILOAD);
+                            mv.visitVarInsn(opCode, item.getIndex());
+                            if (opCode != Opcodes.ALOAD) {
+                                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/utils/TypeUtil",
+                                        "toObj", "(" + descriptor + ")Ljava/lang/Object;", false);
+                            }
+                            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put",
+                                    "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
+                            mv.visitInsn(Opcodes.POP);
+                            break;
                         }
-                        mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put",
-                                "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
-                        mv.visitInsn(Opcodes.POP);
-                        break;
                     }
                 }
             }
