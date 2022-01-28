@@ -28,7 +28,6 @@ public class RunTraceObserver {
 
     public static void runTrace(String tag, int level, boolean isUpload,
                                 HashMap<String, Object> paramMap) {
-        level += 2;
         if (paramMap != null) {
             switch (level) {
                 case Log.DEBUG:
@@ -56,5 +55,9 @@ public class RunTraceObserver {
                 }
             }
         }
+    }
+
+    public static void runTime() {
+
     }
 }

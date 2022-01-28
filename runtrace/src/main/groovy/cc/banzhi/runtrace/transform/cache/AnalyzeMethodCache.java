@@ -18,14 +18,11 @@ public class AnalyzeMethodCache {
     public static void put(String key, AnalyzeMethodBean data) {
         if (data != null && TransformUtil.isNotEmpty(key)) {
             methodMap.put(key, data);
-            System.out.println(key);
-            System.out.println(methodMap.toString());
         }
     }
 
     public static AnalyzeMethodBean get(String key) {
         if (TransformUtil.isNotEmpty(key)) {
-//            System.out.println(key);
             return methodMap.get(key);
         }
         return null;

@@ -37,8 +37,6 @@ public class AnalyzeMethodVisitor extends MethodVisitor {
         if (isRunTrace && analyzeMethodBean != null) {
             AnalyzeMethodCache.put(analyzeMethodBean.transKey(), analyzeMethodBean);
         }
-//        System.out.println(analyzeMethodBean.transKey());
-//        System.out.println(AnalyzeMethodCache.get(analyzeMethodBean.transKey()));
         super.visitEnd();
     }
 
