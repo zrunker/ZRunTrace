@@ -6,7 +6,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Map;
 
 /**
  * @program: ZRunTrace
@@ -29,9 +28,9 @@ public @interface RunTrace {
     // 额外参数
     String extras() default "";
 
-    // 是否开启统计方法执行时间
-    boolean enableTime() default false;
-
     // 是否上传网络
     boolean enableUpload() default false;
+
+    // 是否开启统计方法执行时间
+    boolean enableTime() default false;
 }

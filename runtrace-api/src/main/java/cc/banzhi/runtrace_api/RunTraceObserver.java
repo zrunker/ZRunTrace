@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 /**
  * @program: ZRunTrace
- * @description: 监测信息管理类
+ * @description: 监测信息观察者
  * @author: zoufengli01
  * @create: 2022/1/24 6:46 下午
  **/
@@ -26,6 +26,14 @@ public class RunTraceObserver {
         }
     }
 
+    /**
+     * 方法参数信息
+     *
+     * @param tag      日志TAG
+     * @param level    日志等级
+     * @param isUpload 是否上传
+     * @param paramMap 参数信息
+     */
     public static void runTrace(String tag, int level, boolean isUpload,
                                 HashMap<String, Object> paramMap) {
         if (paramMap != null) {
@@ -57,7 +65,22 @@ public class RunTraceObserver {
         }
     }
 
-    public static void runTime() {
-
+    /**
+     * 方法运行时长
+     *
+     * @param tag      日志TAG
+     * @param level    日志等级
+     * @param isUpload 是否上传
+     * @param time     总时长（ms）
+     */
+    public static void runTime(String tag, int level, boolean isUpload,
+                               long time) {
+        if (list.size() > 0) {
+            for (IRunTrace item : list) {
+                if (item != null) {
+                    item.runTime(tag, level, isUpload, time);
+                }
+            }
+        }
     }
 }

@@ -187,13 +187,6 @@ public class GenerateMethodVisitor extends MethodVisitor {
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
                     "currentTimeMillis", "()J", false);
             mv.visitVarInsn(Opcodes.LSTORE, startTimeIndex);
-
-//            // 简化版
-//            String key = AnalyzeMethodCache.transKey(analyzeMethodBean.getClassName(),
-//                    analyzeMethodBean.getName(), analyzeMethodBean.getDescriptor());
-//            mv.visitLdcInsn(key);
-//            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/cache/TimeCache",
-//                    "put", "(Ljava/lang/String;)V", false);
         }
     }
 
@@ -222,18 +215,6 @@ public class GenerateMethodVisitor extends MethodVisitor {
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log", "i", "(Ljava/lang/String;Ljava/lang/String;)I", false);
             mv.visitInsn(Opcodes.POP);
-
-//            // 简化版
-//            mv.visitLdcInsn(tag);
-//            String key = AnalyzeMethodCache.transKey(analyzeMethodBean.getClassName(),
-//                    analyzeMethodBean.getName(), analyzeMethodBean.getDescriptor());
-//            mv.visitLdcInsn(key);
-//            mv.visitLdcInsn(analyzeMethodBean.getName());
-//            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/cache/TimeCache",
-//                    "get", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false);
-//            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log", "i",
-//                    "(Ljava/lang/String;Ljava/lang/String;)I", false);
-//            mv.visitInsn(Opcodes.POP);
         }
     }
 }
