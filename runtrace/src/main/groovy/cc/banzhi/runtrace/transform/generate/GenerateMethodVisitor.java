@@ -19,7 +19,10 @@ import cc.banzhi.runtrace.transform.utils.TransformUtil;
  **/
 public class GenerateMethodVisitor extends MethodVisitor {
     private final AnalyzeMethodBean analyzeMethodBean;
+    // 注解信息
     private HashMap<String, Object> annotationMap;
+    // 局部变量信息
+    private ArrayList<AnalyzeVariableBean> variableList;
     // 日志Tag
     private Object tag;
 
@@ -44,9 +47,17 @@ public class GenerateMethodVisitor extends MethodVisitor {
             if (!TransformUtil.isNotEmpty(this.tag)) {
                 this.tag = analyzeMethodBean.getClassName();
             }
+            this.variableList = analyzeMethodBean.getVariableList();
+            if (variableList != null && variableList.size() > 0) {
+                AnalyzeVariableBean lastVariableBean = variableList.get(variableList.size() - 1);
+                if (lastVariableBean != null) {
+                    this.localVarPosition = lastVariableBean.getIndex() + 1;
+                } else {
+                    this.localVarPosition = variableList.size();
+                }
+            }
             this.isStatic = analyzeMethodBean.isStatic();
             this.argumentArrays = Type.getArgumentTypes(analyzeMethodBean.getDescriptor());
-            this.localVarPosition = analyzeMethodBean.getVariableList().size();
         }
     }
 
@@ -78,11 +89,6 @@ public class GenerateMethodVisitor extends MethodVisitor {
             }
         }
         super.visitInsn(opcode);
-    }
-
-    @Override
-    public void visitMaxs(int maxStack, int maxLocals) {
-        super.visitMaxs(maxStack, maxLocals);
     }
 
     /**
@@ -155,8 +161,10 @@ public class GenerateMethodVisitor extends MethodVisitor {
                             int opCode = Type.getType(descriptor).getOpcode(Opcodes.ILOAD);
                             mv.visitVarInsn(opCode, item.getIndex());
                             if (opCode != Opcodes.ALOAD) {
-                                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/utils/TypeUtil",
-                                        "toObj", "(" + descriptor + ")Ljava/lang/Object;", false);
+//                                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/utils/TypeUtil",
+//                                        "toObj", "(" + descriptor + ")Ljava/lang/Object;", false);
+                                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String",
+                                        "valueOf", "(" + descriptor + ")Ljava/lang/String;", false);
                             }
                             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put",
                                     "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
