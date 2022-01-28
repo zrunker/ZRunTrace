@@ -11,7 +11,7 @@ import java.util.HashMap;
  * @author: zoufengli01
  * @create: 2022/1/24 6:46 下午
  **/
-public class RunTraceUtil {
+public class RunTraceObserver {
     private static final ArrayList<IRunTrace> list = new ArrayList<>();
 
     public static void addRunTrace(IRunTrace iRunTrace) {

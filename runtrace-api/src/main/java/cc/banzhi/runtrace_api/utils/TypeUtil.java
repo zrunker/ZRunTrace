@@ -1,4 +1,4 @@
-package cc.banzhi.runtrace_api;
+package cc.banzhi.runtrace_api.utils;
 
 /**
  * @program: ZRunTrace
