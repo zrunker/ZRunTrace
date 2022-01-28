@@ -20,7 +20,7 @@ public class AnalyzeMethodBean {
     private final int access;
     private final boolean isStatic;
     // 注解
-    private final HashMap<String, Object> annotationMap;
+    private HashMap<String, Object> annotationMap;
     // 变量
     private final ArrayList<AnalyzeVariableBean> variableList;
 
@@ -54,7 +54,7 @@ public class AnalyzeMethodBean {
 
     // 重置annotationMap
     public void resetAnnotationMap() {
-        TransformUtil.resetAnnotationMap(className, annotationMap);
+        annotationMap = TransformUtil.createAnnotationMap(className);
     }
 
     // 生成缓存key
