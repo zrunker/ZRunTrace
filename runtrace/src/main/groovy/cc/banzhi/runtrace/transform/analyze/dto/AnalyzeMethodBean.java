@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import cc.banzhi.runtrace.transform.cache.AnalyzeMethodCache;
+import cc.banzhi.runtrace.transform.utils.TransformUtil;
 
 /**
  * @program: ZRunTrace
@@ -49,15 +50,15 @@ public class AnalyzeMethodBean {
     }
 
     public void putAnnotationMap(String key, Object obj) {
-        if (key != null && !"".equals(key)
-                && obj != null && !"".equals(obj)) {
+        if (TransformUtil.isNotEmpty(key)
+                && TransformUtil.isNotEmpty(obj)) {
             this.annotationMap.put(key, obj);
         }
     }
 
     public void putVariableList(String name, String descriptor, int index) {
-        if (name != null && !"".equals(name)
-                && descriptor != null && !"".equals(descriptor) && index >= 0) {
+        if (TransformUtil.isNotEmpty(name)
+                && TransformUtil.isNotEmpty(descriptor) && index >= 0) {
             AnalyzeVariableBean data = new AnalyzeVariableBean(name, descriptor, index);
             this.variableList.add(data);
         }

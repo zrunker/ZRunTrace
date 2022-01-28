@@ -10,6 +10,7 @@ import java.util.HashMap;
 import cc.banzhi.runtrace.transform.analyze.dto.AnalyzeMethodBean;
 import cc.banzhi.runtrace.transform.analyze.dto.AnalyzeVariableBean;
 import cc.banzhi.runtrace.transform.cache.AnalyzeMethodCache;
+import cc.banzhi.runtrace.transform.utils.TransformUtil;
 
 /**
  * @program: ZRunTrace
@@ -33,10 +34,6 @@ public class GenerateMethodVisitor extends MethodVisitor {
 //    // 统计时间【局部变量表】开始位置
 //    private int startTimeIndex;
 
-    private boolean isNotEmpty(Object value) {
-        return value != null && !"".equals(value);
-    }
-
     public GenerateMethodVisitor(int api, MethodVisitor methodVisitor,
                                  AnalyzeMethodBean analyzeMethodBean) {
         super(api, methodVisitor);
@@ -45,7 +42,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
 //            System.out.println(analyzeMethodBean.toString());
             this.annotationMap = analyzeMethodBean.getAnnotationMap();
             this.tag = annotationMap.get("tag");
-            if (!isNotEmpty(this.tag)) {
+            if (!TransformUtil.isNotEmpty(this.tag)) {
                 this.tag = analyzeMethodBean.getClassName();
             }
             this.isStatic = analyzeMethodBean.isStatic();
@@ -95,7 +92,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
      * @param desc 描述信息
      */
     private void generateDesc(Object desc) {
-        if (isNotEmpty(desc)) {
+        if (TransformUtil.isNotEmpty(desc)) {
             mv.visitLdcInsn(tag);
             mv.visitLdcInsn(desc);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log",
@@ -134,7 +131,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
             mv.visitInsn(Opcodes.POP);
 
             Object extras = annotationMap.get("extras");
-            if (isNotEmpty(extras)) {
+            if (TransformUtil.isNotEmpty(extras)) {
                 mv.visitVarInsn(Opcodes.ALOAD, localVarPosition);
                 mv.visitLdcInsn("extras");
                 mv.visitLdcInsn(extras);
