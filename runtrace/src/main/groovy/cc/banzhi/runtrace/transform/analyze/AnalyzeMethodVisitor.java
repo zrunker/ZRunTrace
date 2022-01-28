@@ -13,7 +13,7 @@ import cc.banzhi.runtrace.transform.cache.Constants;
 
 /**
  * @program: ZRunTrace
- * @description: 解析方法数据实例
+ * @description: 解析方法数据实例，注意处理类注解和方法注解
  * @author: zoufengli01
  * @create: 2022/1/24 4:25 下午
  **/
@@ -29,30 +29,24 @@ public class AnalyzeMethodVisitor extends MethodVisitor {
         super(api, methodVisitor);
         this.analyzeMethodBean = new AnalyzeMethodBean(className, name, descriptor,
                 access, (access & Opcodes.ACC_STATIC) != 0, annotationMap);
-//        System.out.println(isRunTrace);
-        if (isRunTrace) {
-            // 如果Class添加注释，就进行缓存
-            AnalyzeMethodCache.put(analyzeMethodBean.transKey(), analyzeMethodBean);
-        }
+        this.isRunTrace = isRunTrace;
     }
 
     @Override
     public void visitEnd() {
-//        System.out.println("visitEnd");
         if (isRunTrace && analyzeMethodBean != null) {
             AnalyzeMethodCache.put(analyzeMethodBean.transKey(), analyzeMethodBean);
         }
-//        System.out.println(AnalyzeMethodCache.get(analyzeMethodBean.transKey()));
         super.visitEnd();
     }
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-//        System.out.println("visitAnnotation = " + descriptor);
-        isRunTrace = Constants.ANNOTATION_NAME.equals(descriptor);
-        if (isRunTrace && analyzeMethodBean != null) {
+        if (Constants.ANNOTATION_NAME.equals(descriptor)) {
             analyzeMethodBean.resetAnnotationMap();
-//            System.out.println(analyzeMethodBean.toString());
+            isRunTrace = true;
+        }
+        if (isRunTrace && analyzeMethodBean != null) {
             return new MethodAnnotationVisitor(Opcodes.ASM7);
         }
         return super.visitAnnotation(descriptor, visible);
@@ -64,7 +58,6 @@ public class AnalyzeMethodVisitor extends MethodVisitor {
     @Override
     public void visitLocalVariable(String name, String descriptor, String signature,
                                    Label start, Label end, int index) {
-//        System.out.println("visitLocalVariable = " + name);
         if (isRunTrace && analyzeMethodBean != null) {
             // 包括 非静态方法第一个参数this
             analyzeMethodBean.putVariableList(name, descriptor, index);
