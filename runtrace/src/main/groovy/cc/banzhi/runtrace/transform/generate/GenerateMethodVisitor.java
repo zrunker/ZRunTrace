@@ -22,16 +22,13 @@ public class GenerateMethodVisitor extends MethodVisitor {
     private HashMap<String, Object> annotationMap;
     // 日志Tag
     private Object tag;
-    // 是否静态
+
+    // 是否为静态方法
     private boolean isStatic;
-//    // 定义统计开始时间-局部变量表位置
-//    private int startTimeIndex;
     // 方法参数集合（不包括非静态方法中的this）
     private Type[] argumentArrays;
-    // 局部变量表中可开始位置
-    private int startVarIndex;
-    // 方法参数的个数
-    private int paramSize;
+    // 局部变量表中数量/位置
+    private int localVarPosition;
 
     private boolean isNotEmpty(Object value) {
         return value != null && !"".equals(value);
@@ -48,12 +45,9 @@ public class GenerateMethodVisitor extends MethodVisitor {
             if (!isNotEmpty(this.tag)) {
                 this.tag = analyzeMethodBean.getClassName();
             }
-            // 非静态方法第一个参数为this
             this.isStatic = analyzeMethodBean.isStatic();
-            // 方法参数集合，不包括隐藏参数
             this.argumentArrays = Type.getArgumentTypes(analyzeMethodBean.getDescriptor());
-//            this.startVarIndex = argumentArrays.length + (isStatic ? 0 : 1);
-            this.startVarIndex = analyzeMethodBean.getVariableList().size();
+            this.localVarPosition = analyzeMethodBean.getVariableList().size();
         }
     }
 
@@ -68,7 +62,6 @@ public class GenerateMethodVisitor extends MethodVisitor {
 
             boolean enableTime = (boolean) annotationMap.get("enableTime");
             if (enableTime) {
-//                this.startTimeIndex = startVarIndex + 1;
                 generateTimeStart();
             }
         }
@@ -80,7 +73,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
                 && analyzeMethodBean != null
                 && annotationMap != null) {
             boolean enableTime = (boolean) annotationMap.get("enableTime");
-            if (enableTime ) {
+            if (enableTime) {
                 generateTimeEnd();
             }
         }
@@ -114,16 +107,13 @@ public class GenerateMethodVisitor extends MethodVisitor {
      */
     private void generateLog(ArrayList<AnalyzeVariableBean> variableList) {
         if (variableList != null && variableList.size() > 0) {
-//            int offset = isStatic ? 0 : -1;
-//            int index = variableList.size() + 1 + offset;
-
             mv.visitTypeInsn(Opcodes.NEW, "java/util/HashMap");
             mv.visitInsn(Opcodes.DUP);
             mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/HashMap",
                     "<init>", "()V", false);
-            mv.visitVarInsn(Opcodes.ASTORE, startVarIndex);
+            mv.visitVarInsn(Opcodes.ASTORE, localVarPosition);
 
-            mv.visitVarInsn(Opcodes.ALOAD, startVarIndex);
+            mv.visitVarInsn(Opcodes.ALOAD, localVarPosition);
             mv.visitLdcInsn("source");
             mv.visitLdcInsn(analyzeMethodBean.getClassName() + "#"
                     + analyzeMethodBean.getName() + analyzeMethodBean.getDescriptor());
@@ -131,7 +121,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
                     "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
             mv.visitInsn(Opcodes.POP);
 
-            mv.visitVarInsn(Opcodes.ALOAD, startVarIndex);
+            mv.visitVarInsn(Opcodes.ALOAD, localVarPosition);
             mv.visitLdcInsn("executeTime");
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/utils/DateUtil",
                     "getCurrentTime", "()Ljava/lang/String;", false);
@@ -141,39 +131,13 @@ public class GenerateMethodVisitor extends MethodVisitor {
 
             Object extras = annotationMap.get("extras");
             if (isNotEmpty(extras)) {
-                mv.visitVarInsn(Opcodes.ALOAD, startVarIndex);
+                mv.visitVarInsn(Opcodes.ALOAD, localVarPosition);
                 mv.visitLdcInsn("extras");
                 mv.visitLdcInsn(extras);
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put",
                         "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
                 mv.visitInsn(Opcodes.POP);
             }
-
-//            mv.visitVarInsn(Opcodes.ALOAD, index);
-//            mv.visitLdcInsn("desc");
-//            mv.visitLdcInsn(annotationMap.get("desc"));
-//            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put",
-//                    "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
-//            mv.visitInsn(Opcodes.POP);
-
-//            for (int i = 0; i < variableList.size(); i++) {
-//                AnalyzeVariableBean item = variableList.get(i);
-//                String name = item.getName();
-//                if (!"this".equals(name)) {
-//                    mv.visitVarInsn(Opcodes.ALOAD, index);
-//                    mv.visitLdcInsn(name);
-//                    String descriptor = item.getDescriptor();
-//                    int opCode = Type.getType(descriptor).getOpcode(Opcodes.ILOAD);
-//                    mv.visitVarInsn(opCode, item.getIndex());
-//                    if (opCode != Opcodes.ALOAD) {
-//                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/utils/TypeUtil",
-//                                "toObj", "(" + descriptor + ")Ljava/lang/Object;", false);
-//                    }
-//                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put",
-//                            "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
-//                    mv.visitInsn(Opcodes.POP);
-//                }
-//            }
 
             // 方法参数的个数
             int offset = isStatic ? 0 : 1;
@@ -187,11 +151,10 @@ public class GenerateMethodVisitor extends MethodVisitor {
                     System.out.println(type.getClassName());
                     if (descriptor.equals(type.getDescriptor())
                             && !"this".equals(name)) {
-                        mv.visitVarInsn(Opcodes.ALOAD, startVarIndex);
+                        mv.visitVarInsn(Opcodes.ALOAD, localVarPosition);
                         mv.visitLdcInsn(name);
-//                        mv.visitLdcInsn("222");
                         int opCode = Type.getType(descriptor).getOpcode(Opcodes.ILOAD);
-                        mv.visitVarInsn(opCode, item.getIndex() );
+                        mv.visitVarInsn(opCode, item.getIndex());
                         if (opCode != Opcodes.ALOAD) {
                             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/utils/TypeUtil",
                                     "toObj", "(" + descriptor + ")Ljava/lang/Object;", false);
@@ -208,7 +171,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
             mv.visitInsn((Integer) annotationMap.get("level") + 1);
             boolean enableUpload = (boolean) annotationMap.get("enableUpload");
             mv.visitInsn(enableUpload ? Opcodes.ICONST_1 : Opcodes.ICONST_0);
-            mv.visitVarInsn(Opcodes.ALOAD, startVarIndex);
+            mv.visitVarInsn(Opcodes.ALOAD, localVarPosition);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/RunTraceObserver",
                     "runTrace", "(Ljava/lang/String;IZLjava/util/HashMap;)V", false);
         }
@@ -218,7 +181,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
      * 生成执行时间统计-开始时间
      */
     private void generateTimeStart() {
-        if (  analyzeMethodBean != null) {
+        if (analyzeMethodBean != null) {
 //            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
 //                    "currentTimeMillis", "()J", false);
 //            mv.visitVarInsn(Opcodes.LSTORE, startTimeIndex);
