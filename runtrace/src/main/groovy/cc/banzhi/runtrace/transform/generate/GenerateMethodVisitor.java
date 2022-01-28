@@ -187,7 +187,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
 //            mv.visitVarInsn(Opcodes.LSTORE, startTimeIndex);
 
             // 简化版
-            String key = AnalyzeMethodCache.createKey(analyzeMethodBean.getClassName(),
+            String key = AnalyzeMethodCache.transKey(analyzeMethodBean.getClassName(),
                     analyzeMethodBean.getName(), analyzeMethodBean.getDescriptor());
             mv.visitLdcInsn(key);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/cache/TimeCache",
@@ -223,7 +223,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
 
             // 简化版
             mv.visitLdcInsn(tag);
-            String key = AnalyzeMethodCache.createKey(analyzeMethodBean.getClassName(),
+            String key = AnalyzeMethodCache.transKey(analyzeMethodBean.getClassName(),
                     analyzeMethodBean.getName(), analyzeMethodBean.getDescriptor());
             mv.visitLdcInsn(key);
             mv.visitLdcInsn(analyzeMethodBean.getName());

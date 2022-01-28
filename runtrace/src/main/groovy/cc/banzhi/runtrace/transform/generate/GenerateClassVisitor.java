@@ -30,7 +30,7 @@ public class GenerateClassVisitor extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor,
                                      String signature, String[] exceptions) {
-        String key = AnalyzeMethodCache.createKey(className, name, descriptor);
+        String key = AnalyzeMethodCache.transKey(className, name, descriptor);
         AnalyzeMethodBean analyzeMethodBean = AnalyzeMethodCache.get(key);
         if (analyzeMethodBean != null) {
             return new GenerateMethodVisitor(Opcodes.ASM7,

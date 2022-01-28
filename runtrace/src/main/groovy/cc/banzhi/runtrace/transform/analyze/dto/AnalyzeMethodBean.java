@@ -45,7 +45,7 @@ public class AnalyzeMethodBean {
 
     // 生成缓存key
     public String createKey() {
-        return AnalyzeMethodCache.createKey(className, name, descriptor);
+        return AnalyzeMethodCache.transKey(className, name, descriptor);
     }
 
     public void putAnnotationMap(String key, Object obj) {

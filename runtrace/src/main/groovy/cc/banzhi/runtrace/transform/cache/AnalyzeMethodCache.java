@@ -28,7 +28,7 @@ public class AnalyzeMethodCache {
     }
 
     // 生成缓存key
-    public static String createKey(String className, String name, String descriptor) {
+    public static String transKey(String className, String name, String descriptor) {
         return "className-" + className + "name-" + name + "descriptor-" + descriptor;
     }
 }
