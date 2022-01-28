@@ -20,7 +20,7 @@ public class TransformUtil {
     }
 
     /**
-     * 创建AnnotationMap
+     * 创建AnnotationMap（注解）
      *
      * @param className 类名
      */
@@ -33,6 +33,34 @@ public class TransformUtil {
         annotationMap.put("enableTime", false);
         annotationMap.put("enableUpload", false);
         return annotationMap;
+    }
+
+    /**
+     * 根据日志等级查询方法名称
+     *
+     * @param level 日志等级
+     */
+    public static String getLogFunByLevel(int level) {
+        String fun;
+        switch (level) {
+            case 2:
+                fun = "v";
+                break;
+            case 3:
+                fun = "d";
+                break;
+            case 5:
+                fun = "w";
+                break;
+            case 6:
+                fun = "e";
+                break;
+            case 4:
+            default:
+                fun = "i";
+                break;
+        }
+        return fun;
     }
 
 }

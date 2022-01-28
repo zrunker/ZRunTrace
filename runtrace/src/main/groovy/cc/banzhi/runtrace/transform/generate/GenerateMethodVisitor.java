@@ -25,6 +25,8 @@ public class GenerateMethodVisitor extends MethodVisitor {
     private ArrayList<AnalyzeVariableBean> variableList;
     // 日志Tag
     private Object tag;
+    // 日志等级
+    private int level;
 
     // 是否为静态方法
     private boolean isStatic;
@@ -44,8 +46,12 @@ public class GenerateMethodVisitor extends MethodVisitor {
             System.out.println(analyzeMethodBean.toString());
             this.annotationMap = analyzeMethodBean.getAnnotationMap();
             this.tag = annotationMap.get("tag");
-            if (!TransformUtil.isNotEmpty(this.tag)) {
+            if (!TransformUtil.isNotEmpty(tag)) {
                 this.tag = analyzeMethodBean.getClassName();
+            }
+            Object levelObj = annotationMap.get("level");
+            if (TransformUtil.isNotEmpty(tag)) {
+                this.level = (int) levelObj;
             }
             this.variableList = analyzeMethodBean.getVariableList();
             if (variableList != null && variableList.size() > 0) {
@@ -170,7 +176,6 @@ public class GenerateMethodVisitor extends MethodVisitor {
         }
 
         mv.visitLdcInsn(tag);
-        int level = (Integer) annotationMap.get("level");
         mv.visitIntInsn(Opcodes.BIPUSH, level);
         boolean enableUpload = (boolean) annotationMap.get("enableUpload");
         mv.visitInsn(enableUpload ? Opcodes.ICONST_1 : Opcodes.ICONST_0);
@@ -213,7 +218,8 @@ public class GenerateMethodVisitor extends MethodVisitor {
             mv.visitLdcInsn("\n------------" + analyzeMethodBean.getName() + "---------------");
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log", "i", "(Ljava/lang/String;Ljava/lang/String;)I", false);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log", TransformUtil.getLogFunByLevel(level),
+                    "(Ljava/lang/String;Ljava/lang/String;)I", false);
             mv.visitInsn(Opcodes.POP);
         }
     }
