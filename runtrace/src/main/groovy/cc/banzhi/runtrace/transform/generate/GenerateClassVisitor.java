@@ -33,7 +33,7 @@ public class GenerateClassVisitor extends ClassVisitor {
         String key = AnalyzeMethodCache.transKey(className, name, descriptor);
         AnalyzeMethodBean analyzeMethodBean = AnalyzeMethodCache.get(key);
         if (analyzeMethodBean != null) {
-            System.out.println(analyzeMethodBean.toString());
+//            System.out.println(analyzeMethodBean.toString());
             return new GenerateMethodVisitor(Opcodes.ASM7,
                     cv.visitMethod(access, name, descriptor, signature, exceptions), analyzeMethodBean);
         }
