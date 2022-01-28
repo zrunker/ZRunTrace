@@ -9,7 +9,6 @@ import java.util.HashMap;
 
 import cc.banzhi.runtrace.transform.analyze.dto.AnalyzeMethodBean;
 import cc.banzhi.runtrace.transform.analyze.dto.AnalyzeVariableBean;
-import cc.banzhi.runtrace.transform.cache.AnalyzeMethodCache;
 import cc.banzhi.runtrace.transform.utils.TransformUtil;
 
 /**
@@ -31,15 +30,15 @@ public class GenerateMethodVisitor extends MethodVisitor {
     // 局部变量表中数量/位置
     private int localVarPosition;
 
-//    // 统计时间【局部变量表】开始位置
-//    private int startTimeIndex;
+    // 统计时间【局部变量表】开始位置
+    private int startTimeIndex;
 
     public GenerateMethodVisitor(int api, MethodVisitor methodVisitor,
                                  AnalyzeMethodBean analyzeMethodBean) {
         super(api, methodVisitor);
         this.analyzeMethodBean = analyzeMethodBean;
         if (analyzeMethodBean != null) {
-//            System.out.println(analyzeMethodBean.toString());
+            System.out.println(analyzeMethodBean.toString());
             this.annotationMap = analyzeMethodBean.getAnnotationMap();
             this.tag = annotationMap.get("tag");
             if (!TransformUtil.isNotEmpty(this.tag)) {
@@ -62,7 +61,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
 
             boolean enableTime = (boolean) annotationMap.get("enableTime");
             if (enableTime) {
-//                startTimeIndex = localVarPosition + 1;
+                startTimeIndex = localVarPosition + 1;
                 generateTimeStart();
             }
         }
@@ -183,16 +182,16 @@ public class GenerateMethodVisitor extends MethodVisitor {
      */
     private void generateTimeStart() {
         if (analyzeMethodBean != null) {
-//            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
-//                    "currentTimeMillis", "()J", false);
-//            mv.visitVarInsn(Opcodes.LSTORE, startTimeIndex);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System",
+                    "currentTimeMillis", "()J", false);
+            mv.visitVarInsn(Opcodes.LSTORE, startTimeIndex);
 
-            // 简化版
-            String key = AnalyzeMethodCache.transKey(analyzeMethodBean.getClassName(),
-                    analyzeMethodBean.getName(), analyzeMethodBean.getDescriptor());
-            mv.visitLdcInsn(key);
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/cache/TimeCache",
-                    "put", "(Ljava/lang/String;)V", false);
+//            // 简化版
+//            String key = AnalyzeMethodCache.transKey(analyzeMethodBean.getClassName(),
+//                    analyzeMethodBean.getName(), analyzeMethodBean.getDescriptor());
+//            mv.visitLdcInsn(key);
+//            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/cache/TimeCache",
+//                    "put", "(Ljava/lang/String;)V", false);
         }
     }
 
@@ -201,38 +200,38 @@ public class GenerateMethodVisitor extends MethodVisitor {
      */
     private void generateTimeEnd() {
         if (tag != null && analyzeMethodBean != null) {
-//            mv.visitLdcInsn(tag);
-//            mv.visitTypeInsn(Opcodes.NEW, "java/lang/StringBuilder");
-//            mv.visitInsn(Opcodes.DUP);
-//            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
-//            mv.visitLdcInsn("------------"+analyzeMethodBean.getName()+"---------------\n\u6267\u884c\u8017\u65f6\uff1a");
-//            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
-//            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
-//            mv.visitVarInsn(Opcodes.LLOAD, startTimeIndex);
-//            mv.visitInsn(Opcodes.LSUB);
-//            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(J)Ljava/lang/StringBuilder;", false);
-//            mv.visitLdcInsn("\n\u5f53\u524d\u7ebf\u7a0b\uff1a");
-//            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
-//            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Thread", "currentThread", "()Ljava/lang/Thread;", false);
-//            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Thread", "getName", "()Ljava/lang/String;", false);
-//            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
-//            mv.visitLdcInsn("\n------------"+analyzeMethodBean.getName()+"---------------");
-//            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
-//            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
-//            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log", "i", "(Ljava/lang/String;Ljava/lang/String;)I", false);
-//            mv.visitInsn(Opcodes.POP);
-
-            // 简化版
             mv.visitLdcInsn(tag);
-            String key = AnalyzeMethodCache.transKey(analyzeMethodBean.getClassName(),
-                    analyzeMethodBean.getName(), analyzeMethodBean.getDescriptor());
-            mv.visitLdcInsn(key);
-            mv.visitLdcInsn(analyzeMethodBean.getName());
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/cache/TimeCache",
-                    "get", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false);
-            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log", "i",
-                    "(Ljava/lang/String;Ljava/lang/String;)I", false);
+            mv.visitTypeInsn(Opcodes.NEW, "java/lang/StringBuilder");
+            mv.visitInsn(Opcodes.DUP);
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
+            mv.visitLdcInsn("------------" + analyzeMethodBean.getName() + "---------------\n\u6267\u884c\u8017\u65f6\uff1a");
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+            mv.visitVarInsn(Opcodes.LLOAD, startTimeIndex);
+            mv.visitInsn(Opcodes.LSUB);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(J)Ljava/lang/StringBuilder;", false);
+            mv.visitLdcInsn("\n\u5f53\u524d\u7ebf\u7a0b\uff1a");
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Thread", "currentThread", "()Ljava/lang/Thread;", false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Thread", "getName", "()Ljava/lang/String;", false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+            mv.visitLdcInsn("\n------------" + analyzeMethodBean.getName() + "---------------");
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+            mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
+            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log", "i", "(Ljava/lang/String;Ljava/lang/String;)I", false);
             mv.visitInsn(Opcodes.POP);
+
+//            // 简化版
+//            mv.visitLdcInsn(tag);
+//            String key = AnalyzeMethodCache.transKey(analyzeMethodBean.getClassName(),
+//                    analyzeMethodBean.getName(), analyzeMethodBean.getDescriptor());
+//            mv.visitLdcInsn(key);
+//            mv.visitLdcInsn(analyzeMethodBean.getName());
+//            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/cache/TimeCache",
+//                    "get", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false);
+//            mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log", "i",
+//                    "(Ljava/lang/String;Ljava/lang/String;)I", false);
+//            mv.visitInsn(Opcodes.POP);
         }
     }
 }

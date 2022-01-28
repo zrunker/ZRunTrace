@@ -11,7 +11,7 @@
   "createdBy": {
     "gradle": {
       "version": "6.7.1",
-      "buildId": "rycxnnnj5nfuligudd4ifsvia4"
+      "buildId": "cqwukfurfzf3vjmqpmoeyhae3y"
     }
   },
   "variants": [
@@ -28,11 +28,11 @@
         {
           "name": "RunTracePlugin-1.0.0.jar",
           "url": "RunTracePlugin-1.0.0.jar",
-          "size": 20057,
-          "sha512": "b327264d73ef6b999b559a0f6e443d594c906bb8bd45796e23fc30b3ba14e528c2d1e5ed2d095169467975d27650237dd9f88369ca6cc54b33f2e0b089bd5140",
-          "sha256": "72cac9d7e8e62913ed18397ce20896fe4e68bf71a5cad1ecef5f5dc3c5787fc9",
-          "sha1": "0ca1b8f224d3e54c42c2ec757338f18744508741",
-          "md5": "b951dad2d7f0ad3ff7f26194c6a8ce11"
+          "size": 20900,
+          "sha512": "a83cffc4d5f1d7fc8755fe591223789bd29f6920351e4774f567045ec9a7300b7f8b850c26a2af7a8c1f40df596cb038e4abdda43e6aee24b13146d0ba5380fb",
+          "sha256": "8facac5b81e8728d7a3ca57833fcc8a5a21e0702fa809b8a794fcc8ab7e9138d",
+          "sha1": "5b038feb4fce37e06bd5247d69491ee1167f399a",
+          "md5": "ed4597ff72ff0675f7252f390bac636b"
         }
       ]
     },
@@ -65,11 +65,11 @@
         {
           "name": "RunTracePlugin-1.0.0.jar",
           "url": "RunTracePlugin-1.0.0.jar",
-          "size": 20057,
-          "sha512": "b327264d73ef6b999b559a0f6e443d594c906bb8bd45796e23fc30b3ba14e528c2d1e5ed2d095169467975d27650237dd9f88369ca6cc54b33f2e0b089bd5140",
-          "sha256": "72cac9d7e8e62913ed18397ce20896fe4e68bf71a5cad1ecef5f5dc3c5787fc9",
-          "sha1": "0ca1b8f224d3e54c42c2ec757338f18744508741",
-          "md5": "b951dad2d7f0ad3ff7f26194c6a8ce11"
+          "size": 20900,
+          "sha512": "a83cffc4d5f1d7fc8755fe591223789bd29f6920351e4774f567045ec9a7300b7f8b850c26a2af7a8c1f40df596cb038e4abdda43e6aee24b13146d0ba5380fb",
+          "sha256": "8facac5b81e8728d7a3ca57833fcc8a5a21e0702fa809b8a794fcc8ab7e9138d",
+          "sha1": "5b038feb4fce37e06bd5247d69491ee1167f399a",
+          "md5": "ed4597ff72ff0675f7252f390bac636b"
         }
       ]
     }
