@@ -32,20 +32,33 @@ public class AnalyzeMethodBean {
         this.access = access;
         this.isStatic = isStatic;
         // 设置注解
-        this.annotationMap = new HashMap<>();
-        this.annotationMap.put("tag", className);
-        this.annotationMap.put("level", 4);
-        this.annotationMap.put("desc", null);
-        this.annotationMap.put("source", null);
-        this.annotationMap.put("extras", null);
-        this.annotationMap.put("enableTime", false);
-        this.annotationMap.put("enableUpload", false);
+        this.annotationMap = TransformUtil.createAnnotationMap(className);
         // 初始化变量集合
         this.variableList = new ArrayList<>();
     }
 
+    public AnalyzeMethodBean(String className, String name,
+                             String descriptor, int access, boolean isStatic,
+                             HashMap<String, Object> annotationMap) {
+        this.className = className;
+        this.name = name;
+        this.descriptor = descriptor;
+        this.access = access;
+        this.isStatic = isStatic;
+        // 设置注解
+        this.annotationMap = annotationMap != null ?
+                annotationMap : TransformUtil.createAnnotationMap(className);
+        // 初始化变量集合
+        this.variableList = new ArrayList<>();
+    }
+
+    // 重置annotationMap
+    public void resetAnnotationMap() {
+        TransformUtil.resetAnnotationMap(className, annotationMap);
+    }
+
     // 生成缓存key
-    public String createKey() {
+    public String transKey() {
         return AnalyzeMethodCache.transKey(className, name, descriptor);
     }
 

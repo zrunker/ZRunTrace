@@ -41,7 +41,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
         super(api, methodVisitor);
         this.analyzeMethodBean = analyzeMethodBean;
         if (analyzeMethodBean != null) {
-            System.out.println(analyzeMethodBean.toString());
+//            System.out.println(analyzeMethodBean.toString());
             this.annotationMap = analyzeMethodBean.getAnnotationMap();
             this.tag = annotationMap.get("tag");
             if (!TransformUtil.isNotEmpty(this.tag)) {
@@ -67,8 +67,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
         if (analyzeMethodBean != null && annotationMap != null) {
             generateDesc(annotationMap.get("desc"));
 
-            ArrayList<AnalyzeVariableBean> variableList = analyzeMethodBean.getVariableList();
-            generateLog(variableList);
+            generateLog();
 
             boolean enableTime = (boolean) annotationMap.get("enableTime");
             if (enableTime) {
@@ -108,10 +107,8 @@ public class GenerateMethodVisitor extends MethodVisitor {
 
     /**
      * 生成参数日志
-     *
-     * @param variableList 参数列表
      */
-    private void generateLog(ArrayList<AnalyzeVariableBean> variableList) {
+    private void generateLog() {
         if (variableList != null && variableList.size() > 0) {
             mv.visitTypeInsn(Opcodes.NEW, "java/util/HashMap");
             mv.visitInsn(Opcodes.DUP);
@@ -161,8 +158,6 @@ public class GenerateMethodVisitor extends MethodVisitor {
                             int opCode = Type.getType(descriptor).getOpcode(Opcodes.ILOAD);
                             mv.visitVarInsn(opCode, item.getIndex());
                             if (opCode != Opcodes.ALOAD) {
-//                                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/utils/TypeUtil",
-//                                        "toObj", "(" + descriptor + ")Ljava/lang/Object;", false);
                                 mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/String",
                                         "valueOf", "(" + descriptor + ")Ljava/lang/String;", false);
                             }
