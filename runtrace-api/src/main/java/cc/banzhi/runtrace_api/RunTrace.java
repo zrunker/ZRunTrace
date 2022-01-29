@@ -22,15 +22,21 @@ public @interface RunTrace {
     // 日志级别
     int level() default Log.INFO;
 
-    // 描述信息
-    String desc() default "";
+    // 是否开启日志打印
+    boolean enableLog() default true;
+
+    // 是否开启监听
+    boolean enableObserver() default true;
 
     // 额外参数
     String extras() default "";
 
+    // 别名
+    String aliasName() default "";
+
     // 是否上传网络
     boolean enableUpload() default false;
 
-    // 是否开启统计方法执行时间
+    // 是否开启统计方法执行时长
     boolean enableTime() default false;
 }

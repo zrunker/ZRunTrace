@@ -28,8 +28,10 @@ public class TransformUtil {
         HashMap<String, Object> annotationMap = new HashMap<>();
         annotationMap.put("tag", className);
         annotationMap.put("level", 4);
-        annotationMap.put("desc", null);
+        annotationMap.put("enableLog", true);
+        annotationMap.put("enableObserver", true);
         annotationMap.put("extras", null);
+        annotationMap.put("aliasName", null);
         annotationMap.put("enableTime", false);
         annotationMap.put("enableUpload", false);
         return annotationMap;
