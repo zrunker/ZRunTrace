@@ -61,7 +61,9 @@ public class RunTraceTransform extends Transform {
      */
     @Override
     public Set<? super QualifiedContent.Scope> getScopes() {
-        // 整个项目
+        // 作用域为整个项目，可应用于app模块，不能应用于lib，否则会出现如下异常：
+        // Transforms with scopes '[SUB_PROJECTS, EXTERNAL_LIBRARIES]' cannot be applied to library projects.
+        // 如果想要在lib上使用可以设置为TransformManager.PROJECT_ONLY
         return TransformManager.SCOPE_FULL_PROJECT;
     }
 
