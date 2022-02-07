@@ -13,6 +13,8 @@ import com.android.build.api.transform.TransformOutputProvider;
 import com.android.build.gradle.internal.pipeline.TransformManager;
 import com.android.utils.FileUtils;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -28,6 +30,8 @@ import java.util.Enumeration;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
 
 import cc.banzhi.runtrace.transform.analyze.AnalyzeClassVisitor;
 import cc.banzhi.runtrace.transform.generate.GenerateClassVisitor;
@@ -72,7 +76,7 @@ public class RunTraceTransform extends Transform {
      */
     @Override
     public boolean isIncremental() {
-        return false;
+        return true;
     }
 
     /**
@@ -90,45 +94,136 @@ public class RunTraceTransform extends Transform {
         // 遍历输入目录
         Collection<TransformInput> inputs = transformInvocation.getInputs();
         for (TransformInput input : inputs) {
-            // 遍历jar包
+            // 遍历jar包，（Module和AAR等第三方引用，一般情况下会以classes.jar的方式存在）
             Collection<JarInput> jarInputs = input.getJarInputs();
-            for (JarInput jarInput : jarInputs) {
-                File inputFile = jarInput.getFile();
-                File outputFile = outputProvider.getContentLocation(
-                        jarInput.getName(), jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
-                FileUtils.copyFile(inputFile, outputFile);
-            }
+            traverseJarInput(jarInputs, outputProvider);
+//            for (JarInput jarInput : jarInputs) {
+//                File inputFile = jarInput.getFile();
+//                File outputFile = outputProvider.getContentLocation(
+//                        jarInput.getName(), jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
+//                FileUtils.copyFile(inputFile, outputFile);
+//            }
 
-            // 遍历dir目录 - 一般情况下都是处理dir目录，而非jar
+            // 遍历dir目录，（一般情况下为插件引入Module目录）
             Collection<DirectoryInput> directoryInputs = input.getDirectoryInputs();
             traverseDirectoryInput(directoryInputs, outputProvider);
         }
     }
 
-//    /**
-//     * 遍历JarInput
-//     *
-//     * @param jarInputs 待遍历集合
-//     */
-//    private void traverseJarInput(Collection<JarInput> jarInputs)
-//            throws IOException {
-//        if (jarInputs != null && jarInputs.size() > 0) {
-//            for (JarInput jarInput : jarInputs) {
-//                JarFile jarFile = new JarFile(jarInput.getFile());
-//                // 解析jarFile
-//                Enumeration<JarEntry> enumerations = jarFile.entries();
-//                while (enumerations.hasMoreElements()) {
-//                    JarEntry jarEntry = enumerations.nextElement();
-//                    String entryName = jarEntry.getName();
-//                    // 处理Class文件
-//                    if (checkClass(entryName)) {
-//                        InputStream is = jarFile.getInputStream(jarEntry);
-//                        analyzeClass(is);
-//                    }
-//                }
-//            }
-//        }
-//    }
+    /**
+     * 遍历JarInput
+     *
+     * @param jarInputs 待遍历集合
+     */
+    private void traverseJarInput(Collection<JarInput> jarInputs,
+                                  TransformOutputProvider outputProvider) throws IOException {
+        if (jarInputs != null && jarInputs.size() > 0) {
+            for (JarInput jarInput : jarInputs) {
+                if (jarInput == null) {
+                    continue;
+                }
+
+                File inputFile = jarInput.getFile();
+                if (inputFile == null || !inputFile.exists()) {
+                    continue;
+                }
+
+                if (inputFile.getAbsolutePath().endsWith(".jar")) {
+                    File tempFile = null;
+                    FileOutputStream fos = null;
+                    JarOutputStream jos = null;
+                    JarFile jarFile = null;
+
+                    try {
+                        tempFile = new File(inputFile.getParent() +
+                                File.separator + "temp_" + System.currentTimeMillis() + ".jar");
+                        fos = new FileOutputStream(tempFile);
+                        jos = new JarOutputStream(fos);
+
+                        jarFile = new JarFile(inputFile);
+                        Enumeration<JarEntry> enumeration = jarFile.entries();
+                        // 遍历
+                        while (enumeration.hasMoreElements()) {
+                            JarEntry jarEntry = enumeration.nextElement();
+                            String entryName = jarEntry.getName();
+                            ZipEntry zipEntry = new ZipEntry(entryName);
+                            jos.putNextEntry(zipEntry);
+                            // 处理Class
+                            if (checkClass(entryName)) {
+                                System.out.println("处理Class：" + entryName);
+                                // 解析
+                                try (InputStream is = jarFile.getInputStream(jarEntry)) {
+                                    analyzeClass(is);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                                // 生成
+                                try (InputStream is = jarFile.getInputStream(jarEntry)) {
+                                    byte[] bytes = generateClass(is);
+                                    if (bytes != null) {
+                                        jos.write(bytes);
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                try (InputStream is = jarFile.getInputStream(jarEntry)) {
+                                    jos.write(IOUtils.toByteArray(is));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            jos.closeEntry();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (jos != null) {
+                            try {
+                                jos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if (fos != null) {
+                            try {
+                                fos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if (jarFile != null) {
+                            try {
+                                jarFile.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    if (tempFile.exists()) {
+                        // 获取MD5防止jar包重名被覆盖
+                        String md5Name = DigestUtils.md5Hex(inputFile.getAbsolutePath());
+                        String jarName = jarInput.getName();
+                        if (jarName.endsWith(".jar")) {
+                            jarName = jarName.substring(0, jarName.length() - 4);
+                        }
+                        File dest = outputProvider.getContentLocation(md5Name + jarName,
+                                jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
+                        FileUtils.copyFile(tempFile, dest);
+
+                        // 删除临时文件
+                        tempFile.delete();
+                    }
+                } else {
+                    File outputFile = outputProvider.getContentLocation(
+                            jarInput.getName(), jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
+                    FileUtils.copyFile(inputFile, outputFile);
+                }
+            }
+        }
+    }
 
     /**
      * 遍历DirectoryInput
@@ -138,13 +233,18 @@ public class RunTraceTransform extends Transform {
      */
     private void traverseDirectoryInput(Collection<DirectoryInput> directoryInputs,
                                         TransformOutputProvider outputProvider) throws IOException {
-        for (DirectoryInput dirInput : directoryInputs) {
-            File inputFile = dirInput.getFile();
-            traverseFile(inputFile);
-            // 将处理之后的目录拷贝到输出目录
-            File outputFile = outputProvider.getContentLocation(
-                    dirInput.getName(), dirInput.getContentTypes(), dirInput.getScopes(), Format.DIRECTORY);
-            FileUtils.copyDirectory(inputFile, outputFile);
+        if (directoryInputs != null && directoryInputs.size() > 0) {
+            for (DirectoryInput dirInput : directoryInputs) {
+                if (dirInput == null) {
+                    continue;
+                }
+                File inputFile = dirInput.getFile();
+                traverseDirectory(inputFile);
+                // 将处理之后的目录拷贝到输出目录
+                File outputFile = outputProvider.getContentLocation(
+                        dirInput.getName(), dirInput.getContentTypes(), dirInput.getScopes(), Format.DIRECTORY);
+                FileUtils.copyDirectory(inputFile, outputFile);
+            }
         }
     }
 
@@ -153,21 +253,53 @@ public class RunTraceTransform extends Transform {
      *
      * @param file 待处理数据
      */
-    private void traverseFile(File file) {
+    private void traverseDirectory(File file) {
         if (file != null && file.exists()) {
             if (file.isFile()) {
                 String fileName = file.getName();
                 if (checkClass(fileName)) {
                     // 解析
-                    analyzeClass(file);
+                    try (FileInputStream is = new FileInputStream(file)) {
+                        analyzeClass(is);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     // 生成
-                    generateClass(file);
+                    FileInputStream is = null;
+                    FileOutputStream os = null;
+                    try {
+                        is = new FileInputStream(file);
+                        byte[] bytes = generateClass(is);
+                        if (bytes != null && bytes.length > 0) {
+                            os = new FileOutputStream(file);
+                            os.write(bytes);
+                            os.flush();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (is != null) {
+                            try {
+                                is.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if (os != null) {
+                            try {
+                                os.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
                 }
             } else if (file.isDirectory()) {
                 File[] files = file.listFiles();
                 if (files != null && files.length > 0) {
                     for (File item : files) {
-                        traverseFile(item);
+                        traverseDirectory(item);
                     }
                 }
             }
@@ -175,70 +307,32 @@ public class RunTraceTransform extends Transform {
     }
 
     /**
-     * 解析Class
+     * ASM解析Class
      *
-     * @param file 待处理Class文件
+     * @param is 待处理Class文件
      */
-    private void analyzeClass(File file) {
-        if (file != null && file.exists()) {
-            FileInputStream is = null;
-            try {
-                is = new FileInputStream(file);
-                ClassReader classReader = new ClassReader(is);
-                ClassVisitor classVisitor = new AnalyzeClassVisitor(Opcodes.ASM7);
-                classReader.accept(classVisitor, ClassReader.SKIP_FRAMES);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (is != null) {
-                        is.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+    private void analyzeClass(InputStream is) throws IOException {
+        if (is != null && is.available() > 0) {
+            ClassReader classReader = new ClassReader(is);
+            ClassVisitor classVisitor = new AnalyzeClassVisitor(Opcodes.ASM7);
+            classReader.accept(classVisitor, ClassReader.SKIP_FRAMES);
         }
     }
 
     /**
-     * 生成Class
+     * ASM生成Class
      *
-     * @param file 待处理Class文件
+     * @param is 待处理Class文件
      */
-    private void generateClass(File file) {
-        if (file != null && file.exists()) {
-            FileInputStream is = null;
-            FileOutputStream os = null;
-            try {
-                is = new FileInputStream(file);
-                ClassReader classReader = new ClassReader(is);
-                ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
-                ClassVisitor classVisitor = new GenerateClassVisitor(Opcodes.ASM7, classWriter);
-                classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
-                byte[] bytes = classWriter.toByteArray();
-                os = new FileOutputStream(file.getAbsolutePath());
-                os.write(bytes);
-                os.flush();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (os != null) {
-                    try {
-                        os.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+    private byte[] generateClass(InputStream is) throws IOException {
+        if (is != null && is.available() > 0) {
+            ClassReader classReader = new ClassReader(is);
+            ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
+            ClassVisitor classVisitor = new GenerateClassVisitor(Opcodes.ASM7, classWriter);
+            classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
+            return classWriter.toByteArray();
         }
+        return null;
     }
 
     private boolean checkClass(String name) {

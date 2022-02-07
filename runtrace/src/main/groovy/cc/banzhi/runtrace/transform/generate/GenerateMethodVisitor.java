@@ -229,7 +229,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
                 mv.visitTypeInsn(Opcodes.NEW, "java/lang/StringBuilder");
                 mv.visitInsn(Opcodes.DUP);
                 mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
-                mv.visitLdcInsn("------------" + analyzeMethodBean.getName() + "---------------\n\u6267\u884c\u8017\u65f6\uff1a");
+                mv.visitLdcInsn("\n------------" + analyzeMethodBean.getName() + "---------------\n\u6267\u884c\u8017\u65f6\uff1a");
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
                 mv.visitVarInsn(Opcodes.LLOAD, startTimeIndex);

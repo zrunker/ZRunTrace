@@ -26,14 +26,14 @@ public class TransformUtil {
      */
     public static HashMap<String, Object> createAnnotationMap(String className) {
         HashMap<String, Object> annotationMap = new HashMap<>();
+        annotationMap.put("extras", null);
+        annotationMap.put("aliasName", null);
+        annotationMap.put("enableUpload", false);
+        annotationMap.put("enableObserver", true);
         annotationMap.put("tag", className);
         annotationMap.put("level", 4);
         annotationMap.put("enableLog", true);
-        annotationMap.put("enableObserver", true);
-        annotationMap.put("extras", null);
-        annotationMap.put("aliasName", null);
         annotationMap.put("enableTime", false);
-        annotationMap.put("enableUpload", false);
         return annotationMap;
     }
 
