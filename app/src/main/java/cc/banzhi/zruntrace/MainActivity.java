@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cc.banzhi.runtrace_api.RunTrace;
-import cc.banzhi.zruntrace.asmtest.Test;
+import cc.banzhi.testlib.TestX;
 
 @RunTrace
 public class MainActivity extends AppCompatActivity {
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     @RunTrace(aliasName = "测试3", tag = "MainActivity----Test----")
     public static void init(float name) {
         Log.d("MainActivity", "这是一个测试信息 - 3 name = " + name);
+        new TestX(101010101);
     }
 
     @RunTrace
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @RunTrace
-    public void start(Test data) {
+    public void start(TestX data) {
     }
 
     @RunTrace

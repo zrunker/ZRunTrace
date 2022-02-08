@@ -1,0 +1,89 @@
+package cc.banzhi.testlib;
+
+import android.util.Log;
+
+import java.util.HashMap;
+import java.util.List;
+
+import cc.banzhi.runtrace_api.RunTrace;
+import cc.banzhi.runtrace_api.RunTraceObserver;
+import cc.banzhi.runtrace_api.utils.DateUtil;
+
+
+@RunTrace(enableTime = true, enableUpload = true)
+public class TestX {
+    private int num;
+
+    class InnerClassA {
+
+    }
+
+    public TestX(int a) {
+    }
+
+    private void init(int a) {
+        RunTraceObserver.runTrace("Test", 10, false, null);
+        HashMap<String, Object> map = new HashMap<>();
+        Log.d("Test", map.toString());
+
+        RunTraceObserver.runTime("Test", 10, true, System.currentTimeMillis() - 10);
+    }
+
+    private static void init() {
+    }
+
+    @RunTrace(enableTime = true, level = 2, enableLog = false)
+    private static void initTest2(Object name, int index) {
+    }
+
+    @RunTrace(enableTime = true, level = 3, enableObserver = false)
+    private void initTest3(Object name, int index) {
+    }
+
+    @RunTrace(enableTime = true, level = 1)
+    private static void initTest4(Object name, int index) {
+    }
+
+    @RunTrace(enableTime = true, level = 5)
+    private static void initTest5(Object name, int index) {
+    }
+
+    @RunTrace(enableTime = true, level = 6)
+    private static void initTest6(Object name, int index) {
+    }
+
+    @RunTrace(enableTime = true, level = 7)
+    private static void initTest7(Object name, int index) {
+    }
+
+    @RunTrace(aliasName = "测试", enableTime = true, enableUpload = true)
+    private void initTest(Object name, int index,
+                          HashMap<String, Object> map, String[] arrs,
+                          float a, double b, char c, Long d, short e,
+                          byte f, long h, List<String> list) {
+        String m1 = String.valueOf(a);
+
+        String m2 = String.valueOf(index);
+
+        Log.i("Test", "--------------------------------");
+        Log.i("Test", "描述信息");
+
+        final HashMap<String, Object> temp = new HashMap<>();
+        temp.put("name", name);
+        temp.put("executeTime", DateUtil.getCurrentTime());
+        RunTraceObserver.runTrace("Test", 2, false, temp);
+
+        final long num = System.currentTimeMillis();
+
+        HashMap<String, Object> temp2 = new HashMap<>();
+        temp2.put("name", name);
+        temp2.put("executeTime", DateUtil.getCurrentTime());
+        RunTraceObserver.runTrace("Test", 2, false, temp2);
+
+        long startTime = System.currentTimeMillis();
+
+        Object num1 = 10;
+
+        Log.i("Test", "--------------------------------");
+    }
+}

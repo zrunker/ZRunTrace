@@ -76,7 +76,7 @@ public class RunTraceTransform extends Transform {
      */
     @Override
     public boolean isIncremental() {
-        return true;
+        return false;
     }
 
     /**
@@ -113,7 +113,8 @@ public class RunTraceTransform extends Transform {
     /**
      * 遍历JarInput
      *
-     * @param jarInputs 待遍历集合
+     * @param jarInputs      待遍历集合
+     * @param outputProvider 输出Provider
      */
     private void traverseJarInput(Collection<JarInput> jarInputs,
                                   TransformOutputProvider outputProvider) throws IOException {
@@ -150,7 +151,7 @@ public class RunTraceTransform extends Transform {
                             jos.putNextEntry(zipEntry);
                             // 处理Class
                             if (checkClass(entryName)) {
-                                System.out.println("处理Class：" + entryName);
+                                // System.out.println("处理Class：" + entryName);
                                 // 解析
                                 try (InputStream is = jarFile.getInputStream(jarEntry)) {
                                     analyzeClass(is);
@@ -309,7 +310,7 @@ public class RunTraceTransform extends Transform {
     /**
      * ASM解析Class
      *
-     * @param is 待处理Class文件
+     * @param is 待处理Class文件输入流
      */
     private void analyzeClass(InputStream is) throws IOException {
         if (is != null && is.available() > 0) {
@@ -322,7 +323,7 @@ public class RunTraceTransform extends Transform {
     /**
      * ASM生成Class
      *
-     * @param is 待处理Class文件
+     * @param is 待处理Class文件输入流
      */
     private byte[] generateClass(InputStream is) throws IOException {
         if (is != null && is.available() > 0) {
