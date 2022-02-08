@@ -36,7 +36,7 @@ public @interface RunTrace {
     int level() default Log.INFO;
 
     // 是否开启日志打印
-    boolean enableLog() default true;
+    boolean enableLog() default false;
 
     // 是否开启统计方法执行时长
     boolean enableTime() default false;
