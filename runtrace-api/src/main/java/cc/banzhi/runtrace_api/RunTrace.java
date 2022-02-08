@@ -33,7 +33,7 @@ public @interface RunTrace {
     String tag() default "";
 
     // 日志级别
-    int level() default Log.INFO;
+    @LogLevel int level() default Log.INFO;
 
     // 是否开启日志打印
     boolean enableLog() default false;

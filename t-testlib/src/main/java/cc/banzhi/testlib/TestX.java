@@ -38,27 +38,27 @@ public class TestX {
     private static void init() {
     }
 
-    @RunTrace(enableTime = true, level = 2, enableLog = false)
+    @RunTrace(enableTime = true, level = Log.VERBOSE, enableLog = false)
     private static void initTest2(Object name, int index) {
     }
 
-    @RunTrace(enableTime = true, level = 3, enableObserver = false)
+    @RunTrace(enableTime = true, level = Log.DEBUG, enableObserver = false)
     private void initTest3(Object name, int index) {
     }
 
-    @RunTrace(enableTime = true, level = 1)
+    @RunTrace(enableTime = true)
     private static void initTest4(Object name, int index) {
     }
 
-    @RunTrace(enableTime = true, level = 5)
+    @RunTrace(enableTime = true, level = Log.WARN)
     private static void initTest5(Object name, int index) {
     }
 
-    @RunTrace(enableTime = true, level = 6)
+    @RunTrace(enableTime = true, level = Log.ERROR)
     private static void initTest6(Object name, int index) {
     }
 
-    @RunTrace(enableTime = true, level = 7)
+    @RunTrace(enableTime = true)
     private static void initTest7(Object name, int index) {
         Log.d("TestX",
                 "\n------------<init>---------------" +
