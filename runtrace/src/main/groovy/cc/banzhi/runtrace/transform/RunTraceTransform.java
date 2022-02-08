@@ -129,6 +129,15 @@ public class RunTraceTransform extends Transform {
                     continue;
                 }
 
+                // 获取MD5防止jar包重名被覆盖
+                String md5Name = DigestUtils.md5Hex(inputFile.getAbsolutePath());
+                String jarName = jarInput.getName();
+                if (jarName.endsWith(".jar")) {
+                    jarName = jarName.substring(0, jarName.length() - 4);
+                }
+                File dest = outputProvider.getContentLocation(md5Name + jarName,
+                        jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
+
                 if (inputFile.getAbsolutePath().endsWith(".jar")) {
                     File tempFile = null;
                     FileOutputStream fos = null;
@@ -204,23 +213,12 @@ public class RunTraceTransform extends Transform {
                     }
 
                     if (tempFile.exists()) {
-                        // 获取MD5防止jar包重名被覆盖
-                        String md5Name = DigestUtils.md5Hex(inputFile.getAbsolutePath());
-                        String jarName = jarInput.getName();
-                        if (jarName.endsWith(".jar")) {
-                            jarName = jarName.substring(0, jarName.length() - 4);
-                        }
-                        File dest = outputProvider.getContentLocation(md5Name + jarName,
-                                jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
                         FileUtils.copyFile(tempFile, dest);
-
                         // 删除临时文件
                         tempFile.delete();
                     }
                 } else {
-                    File outputFile = outputProvider.getContentLocation(
-                            jarInput.getName(), jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
-                    FileUtils.copyFile(inputFile, outputFile);
+                    FileUtils.copyFile(inputFile, dest);
                 }
             }
         }
