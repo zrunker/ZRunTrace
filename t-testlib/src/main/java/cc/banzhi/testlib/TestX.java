@@ -19,6 +19,12 @@ public class TestX {
     }
 
     public TestX(int a) {
+        Log.d("TestX",
+                "\n统计方法执行时长：\n------------<init>---------------" +
+                        "\n执行耗时：0" +
+                        "\n当前线程：main" +
+                        "\n------------<init>---------------");
+
     }
 
     private void init(int a) {
@@ -54,6 +60,11 @@ public class TestX {
 
     @RunTrace(enableTime = true, level = 7)
     private static void initTest7(Object name, int index) {
+        Log.d("TestX",
+                "\n------------<init>---------------" +
+                        "\n执行耗时：0" +
+                        "\n当前线程：main" +
+                        "\n------------<init>---------------");
     }
 
     @RunTrace(aliasName = "测试", enableTime = true, enableUpload = true)
