@@ -20,6 +20,18 @@ public class TransformUtil {
     }
 
     /**
+     * 格式化className
+     *
+     * @param className 类名
+     */
+    public static String formatClassName(String className) {
+        if (isNotEmpty(className)) {
+            return className.replaceAll("/", ".");
+        }
+        return className;
+    }
+
+    /**
      * 创建AnnotationMap（注解），取决于RunTrace注解默认值
      *
      * @param className 类名
@@ -30,7 +42,7 @@ public class TransformUtil {
         annotationMap.put("aliasName", null);
         annotationMap.put("enableObserver", true);
         annotationMap.put("enableUpload", false);
-        annotationMap.put("tag", className);
+        annotationMap.put("tag", formatClassName(className));
         annotationMap.put("level", 4);
         annotationMap.put("enableLog", false);
         annotationMap.put("enableTime", false);

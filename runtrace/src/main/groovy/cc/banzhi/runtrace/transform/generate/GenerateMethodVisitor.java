@@ -52,7 +52,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
             this.annotationMap = analyzeMethodBean.getAnnotationMap();
             this.tag = annotationMap.get("tag");
             if (!TransformUtil.isNotEmpty(tag)) {
-                this.tag = analyzeMethodBean.getClassName();
+                this.tag = TransformUtil.formatClassName(analyzeMethodBean.getClassName());
             }
             Object levelObj = annotationMap.get("level");
             if (TransformUtil.isNotEmpty(levelObj)) {
@@ -122,7 +122,7 @@ public class GenerateMethodVisitor extends MethodVisitor {
 
             mv.visitVarInsn(Opcodes.ALOAD, localVarPosition);
             mv.visitLdcInsn("traceSource");
-            mv.visitLdcInsn(analyzeMethodBean.getClassName() + "#"
+            mv.visitLdcInsn(TransformUtil.formatClassName(analyzeMethodBean.getClassName()) + "#"
                     + analyzeMethodBean.getName() + analyzeMethodBean.getDescriptor());
             mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/util/HashMap", "put",
                     "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", false);
@@ -228,21 +228,32 @@ public class GenerateMethodVisitor extends MethodVisitor {
                 mv.visitLdcInsn(tag);
                 mv.visitTypeInsn(Opcodes.NEW, "java/lang/StringBuilder");
                 mv.visitInsn(Opcodes.DUP);
-                mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
-                mv.visitLdcInsn("\n\u7edf\u8ba1\u65b9\u6cd5\u6267\u884c\u65f6\u957f\uff1a\n------------" + analyzeMethodBean.getName() + "---------------\n\u6267\u884c\u8017\u65f6\uff1a");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
-                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+                mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder",
+                        "<init>", "()V", false);
+                mv.visitLdcInsn("\n\u7edf\u8ba1\u65b9\u6cd5\u6267\u884c\u65f6\u957f\uff1a\n------------"
+                        + analyzeMethodBean.getName() + "---------------\n\u6267\u884c\u8017\u65f6\uff1a");
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
+                        "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/System", "currentTimeMillis",
+                        "()J", false);
                 mv.visitVarInsn(Opcodes.LLOAD, startTimeIndex);
                 mv.visitInsn(Opcodes.LSUB);
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(J)Ljava/lang/StringBuilder;", false);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
+                        "(J)Ljava/lang/StringBuilder;", false);
                 mv.visitLdcInsn("\n\u5f53\u524d\u7ebf\u7a0b\uff1a");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
-                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Thread", "currentThread", "()Ljava/lang/Thread;", false);
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Thread", "getName", "()Ljava/lang/String;", false);
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
+                        "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+                mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/lang/Thread", "currentThread",
+                        "()Ljava/lang/Thread;", false);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Thread", "getName",
+                        "()Ljava/lang/String;", false);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
+                        "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
                 mv.visitLdcInsn("\n------------" + analyzeMethodBean.getName() + "---------------");
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append",
+                        "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString",
+                        "()Ljava/lang/String;", false);
                 mv.visitMethodInsn(Opcodes.INVOKESTATIC, "android/util/Log", TransformUtil.getLogFunByLevel(level),
                         "(Ljava/lang/String;Ljava/lang/String;)I", false);
                 mv.visitInsn(Opcodes.POP);
