@@ -20,7 +20,7 @@ public class TransformUtil {
     }
 
     /**
-     * 创建AnnotationMap（注解）
+     * 创建AnnotationMap（注解），取决于RunTrace注解默认值
      *
      * @param className 类名
      */
