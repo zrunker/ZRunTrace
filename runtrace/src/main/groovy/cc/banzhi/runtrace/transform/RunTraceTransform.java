@@ -104,7 +104,7 @@ public class RunTraceTransform extends Transform {
 //                FileUtils.copyFile(inputFile, outputFile);
 //            }
 
-            // 遍历dir目录，（一般情况下为插件引入Module目录）
+            // 遍历dir目录，（一般情况下为引入插件的Module目录）
             Collection<DirectoryInput> directoryInputs = input.getDirectoryInputs();
             traverseDirectoryInput(directoryInputs, outputProvider);
         }
