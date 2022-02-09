@@ -97,7 +97,8 @@ public class GenerateMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitInsn(int opcode) {
-        if (opcode == Opcodes.RETURN
+        if (((opcode >= Opcodes.IRETURN && opcode <= Opcodes.RETURN)
+                        || opcode == Opcodes.ATHROW)
                 && analyzeMethodBean != null
                 && annotationMap != null) {
             boolean enableTime = (boolean) annotationMap.get("enableTime");

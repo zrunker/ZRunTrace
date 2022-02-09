@@ -29,7 +29,11 @@ public class MainActivity extends AppCompatActivity {
     public void init() {
     }
 
-    @RunTrace(aliasName = "测试", level = Log.VERBOSE, enableTime = true, enableUpload = true)
+    @RunTrace(aliasName = "测试",
+            level = Log.VERBOSE,
+            enableLog = true,
+            enableTime = true,
+            enableUpload = true)
     private void init(String name, int index) {
         Log.d("MainActivity", "这是一个测试信息 name = " + name + " index = " + index);
     }
