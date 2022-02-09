@@ -160,7 +160,7 @@ public class RunTraceTransform extends Transform {
                             jos.putNextEntry(zipEntry);
                             // 处理Class
                             if (checkClass(entryName)) {
-                                // System.out.println("处理Class：" + entryName);
+                                System.out.println("处理Class：" + entryName);
                                 // 解析
                                 try (InputStream is = jarFile.getInputStream(jarEntry)) {
                                     analyzeClass(is);
@@ -334,10 +334,24 @@ public class RunTraceTransform extends Transform {
         return null;
     }
 
-    private boolean checkClass(String name) {
-        return name.endsWith(".class")
-                && !name.startsWith("R\\$")
-                && !name.equals("R.class")
-                && !name.equals("BuildConfig.class");
+    private boolean checkClass(String className) {
+        if (className.endsWith(".class")
+                && !className.startsWith("androidx/")
+                && !className.startsWith("android/")
+                && !className.startsWith("com/google/android/material/")
+                && !className.startsWith("cc/banzhi/runtrace_api/")) {
+            int position = className.lastIndexOf("/");
+            if (position > 0) {
+                try {
+                    className = className.substring(position + 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return !className.startsWith("R$")
+                    && !className.equals("R.class")
+                    && !className.equals("BuildConfig.class");
+        }
+        return false;
     }
 }
