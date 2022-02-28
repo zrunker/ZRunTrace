@@ -79,7 +79,15 @@ public class MainActivity extends AppCompatActivity {
     public void start(Boolean data) {
     }
 
-    @RunTrace
-    public void start(StringBuilder data) {
+    @RunTrace(
+            aliasName = "TestEventName",
+            extras = "{\"value\": \"测试\"}",
+            enableUpload = true,
+            enableTime = true,
+            enableLog = true
+    )
+    public int add(int a, int b) {
+        System.out.println("测试a+b");
+        return a + b;
     }
 }
