@@ -11,6 +11,8 @@ class RunTracePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
+        // 判断当前模块是否包含'com.android.application'插件
+        // 该插件需要在包含application插件模块下，对整个工程做处理
         if (project.plugins.hasPlugin(AppPlugin)) {
             // 注册Transform任务
             BaseExtension android = project.extensions.getByType(BaseExtension)

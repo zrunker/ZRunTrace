@@ -29,7 +29,7 @@ public @interface RunTrace {
     // 是否上传网络
     boolean enableUpload() default false;
 
-    // 日志tag - 默认类名
+    // 日志tag - 默认为类名
     String tag() default "";
 
     // 日志级别

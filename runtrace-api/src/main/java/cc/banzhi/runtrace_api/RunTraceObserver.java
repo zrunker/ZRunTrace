@@ -25,7 +25,7 @@ public class RunTraceObserver {
     }
 
     /**
-     * 方法参数信息
+     * 接收方法参数信息
      *
      * @param tag      日志TAG
      * @param level    日志等级
@@ -44,7 +44,7 @@ public class RunTraceObserver {
     }
 
     /**
-     * 方法运行时长
+     * 接收方法运行总时长
      *
      * @param tag      日志TAG
      * @param level    日志等级
