@@ -5,15 +5,17 @@ import com.android.build.api.transform.DirectoryInput;
 import com.android.build.api.transform.Format;
 import com.android.build.api.transform.JarInput;
 import com.android.build.api.transform.QualifiedContent;
+import com.android.build.api.transform.Status;
 import com.android.build.api.transform.Transform;
 import com.android.build.api.transform.TransformException;
 import com.android.build.api.transform.TransformInput;
 import com.android.build.api.transform.TransformInvocation;
 import com.android.build.api.transform.TransformOutputProvider;
 import com.android.build.gradle.internal.pipeline.TransformManager;
-import com.android.utils.FileUtils;
+import com.android.ide.common.internal.WaitableExecutor;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -27,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -43,6 +46,9 @@ import cc.banzhi.runtrace.transform.generate.GenerateClassVisitor;
  * @create: 2022/1/13 5:11 下午
  **/
 public class RunTraceTransform extends Transform {
+
+    private WaitableExecutor waitableExecutor = WaitableExecutor.useGlobalSharedThreadPool();
+
     /**
      * 为Transform定义一个唯一的名称
      */
@@ -76,7 +82,7 @@ public class RunTraceTransform extends Transform {
      */
     @Override
     public boolean isIncremental() {
-        return false;
+        return true;
     }
 
     /**
@@ -88,7 +94,8 @@ public class RunTraceTransform extends Transform {
         super.transform(transformInvocation);
         System.out.println("执行------RunTraceTransform------");
         TransformOutputProvider outputProvider = transformInvocation.getOutputProvider();
-        if (!transformInvocation.isIncremental()) {
+        boolean isIncremental = transformInvocation.isIncremental();
+        if (!isIncremental) {
             outputProvider.deleteAll();
         }
         // 遍历输入目录
@@ -96,154 +103,238 @@ public class RunTraceTransform extends Transform {
         for (TransformInput input : inputs) {
             // 遍历jar包，（Module和AAR等第三方引用，一般情况下会以classes.jar的方式存在）
             Collection<JarInput> jarInputs = input.getJarInputs();
-            traverseJarInput(jarInputs, outputProvider);
-//            for (JarInput jarInput : jarInputs) {
-//                File inputFile = jarInput.getFile();
-//                File outputFile = outputProvider.getContentLocation(
-//                        jarInput.getName(), jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
-//                FileUtils.copyFile(inputFile, outputFile);
-//            }
+            if (jarInputs != null && jarInputs.size() > 0) {
+                for (JarInput jarInput : jarInputs) {
+                    // 开启异步并发
+                    waitableExecutor.execute(() -> {
+                        traverseJarInput(jarInput, outputProvider, isIncremental);
+                        return null;
+                    });
+                }
+            }
 
             // 遍历dir目录，（一般情况下为当前引入插件的Module目录）
             Collection<DirectoryInput> directoryInputs = input.getDirectoryInputs();
-            traverseDirectoryInput(directoryInputs, outputProvider);
+            if (directoryInputs != null && directoryInputs.size() > 0) {
+                for (DirectoryInput dirInput : directoryInputs) {
+                    // 开启异步并发
+                    waitableExecutor.execute(() -> {
+                        traverseDirectoryInput(dirInput, outputProvider, isIncremental);
+                        return null;
+                    });
+                }
+            }
         }
+
+        // 等待所有任务结束
+        waitableExecutor.waitForTasksWithQuickFail(true);
     }
 
     /**
      * 遍历JarInput
      *
-     * @param jarInputs      待遍历集合
+     * @param jarInput       待遍历数据
      * @param outputProvider 输出Provider
+     * @param isIncremental  是否支持增量更新
      */
-    private void traverseJarInput(Collection<JarInput> jarInputs,
-                                  TransformOutputProvider outputProvider) throws IOException {
-        if (jarInputs != null && jarInputs.size() > 0) {
-            for (JarInput jarInput : jarInputs) {
-                if (jarInput == null) {
-                    continue;
+    private void traverseJarInput(JarInput jarInput,
+                                  TransformOutputProvider outputProvider, boolean isIncremental) throws IOException {
+        if (jarInput == null) {
+            return;
+        }
+
+        File inputFile = jarInput.getFile();
+        if (inputFile == null || !inputFile.exists()) {
+            return;
+        }
+
+        // 获取MD5防止jar包重名被覆盖
+        String md5Name = DigestUtils.md5Hex(inputFile.getAbsolutePath());
+        String jarName = jarInput.getName();
+        if (jarName.endsWith(".jar")) {
+            jarName = jarName.substring(0, jarName.length() - 4);
+        }
+        File dest = outputProvider.getContentLocation(md5Name + jarName,
+                jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
+
+
+        // 支持增量更新
+        if (isIncremental) {
+            Status status = jarInput.getStatus();
+            if (status == Status.REMOVED) {
+                // 删除
+                File file = outputProvider.getContentLocation(
+                        inputFile.getAbsolutePath(), jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
+                if (file.exists()) {
+                    FileUtils.forceDelete(file);
                 }
-
-                File inputFile = jarInput.getFile();
-                if (inputFile == null || !inputFile.exists()) {
-                    continue;
-                }
-
-                // 获取MD5防止jar包重名被覆盖
-                String md5Name = DigestUtils.md5Hex(inputFile.getAbsolutePath());
-                String jarName = jarInput.getName();
-                if (jarName.endsWith(".jar")) {
-                    jarName = jarName.substring(0, jarName.length() - 4);
-                }
-                File dest = outputProvider.getContentLocation(md5Name + jarName,
-                        jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
-
-                if (inputFile.getAbsolutePath().endsWith(".jar")) {
-                    File tempFile = null;
-                    FileOutputStream fos = null;
-                    JarOutputStream jos = null;
-                    JarFile jarFile = null;
-
-                    try {
-                        tempFile = new File(inputFile.getParent() +
-                                File.separator + "temp_" + System.currentTimeMillis() + ".jar");
-                        fos = new FileOutputStream(tempFile);
-                        jos = new JarOutputStream(fos);
-
-                        jarFile = new JarFile(inputFile);
-                        Enumeration<JarEntry> enumeration = jarFile.entries();
-                        // 遍历
-                        while (enumeration.hasMoreElements()) {
-                            JarEntry jarEntry = enumeration.nextElement();
-                            String entryName = jarEntry.getName();
-                            ZipEntry zipEntry = new ZipEntry(entryName);
-                            jos.putNextEntry(zipEntry);
-                            // 处理Class
-                            if (checkClass(entryName)) {
-                                System.out.println("处理Class：" + entryName);
-                                // 解析
-                                try (InputStream is = jarFile.getInputStream(jarEntry)) {
-                                    analyzeClass(is);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-
-                                // 生成
-                                try (InputStream is = jarFile.getInputStream(jarEntry)) {
-                                    byte[] bytes = generateClass(is);
-                                    if (bytes != null) {
-                                        jos.write(bytes);
-                                    }
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                try (InputStream is = jarFile.getInputStream(jarEntry)) {
-                                    jos.write(IOUtils.toByteArray(is));
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            jos.closeEntry();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (jos != null) {
-                            try {
-                                jos.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        if (fos != null) {
-                            try {
-                                fos.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        if (jarFile != null) {
-                            try {
-                                jarFile.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    if (tempFile.exists()) {
-                        FileUtils.copyFile(tempFile, dest);
-                        // 删除临时文件
-                        tempFile.delete();
-                    }
-                } else {
-                    FileUtils.copyFile(inputFile, dest);
-                }
+                return;
+            } else if (status == Status.NOTCHANGED) {
+                // 不做任何处理，仅仅复制提供给下一个Transform
+                FileUtils.copyFile(inputFile, dest);
+                return;
+            } else if (status == Status.ADDED
+                    || status == Status.CHANGED) {
+                // 正常处理，向下执行
             }
         }
+
+        if (inputFile.getAbsolutePath().endsWith(".jar")) {
+            File tempFile = null;
+            FileOutputStream fos = null;
+            JarOutputStream jos = null;
+            JarFile jarFile = null;
+
+            try {
+                tempFile = new File(inputFile.getParent() +
+                        File.separator + "temp_" + System.currentTimeMillis() + ".jar");
+                fos = new FileOutputStream(tempFile);
+                jos = new JarOutputStream(fos);
+
+                jarFile = new JarFile(inputFile);
+                Enumeration<JarEntry> enumeration = jarFile.entries();
+                // 遍历
+                while (enumeration.hasMoreElements()) {
+                    JarEntry jarEntry = enumeration.nextElement();
+                    String entryName = jarEntry.getName();
+                    ZipEntry zipEntry = new ZipEntry(entryName);
+                    jos.putNextEntry(zipEntry);
+                    // 处理Class
+                    if (checkClass(entryName)) {
+                        System.out.println("处理Class：" + entryName);
+                        // 解析
+                        try (InputStream is = jarFile.getInputStream(jarEntry)) {
+                            analyzeClass(is);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        // 生成
+                        try (InputStream is = jarFile.getInputStream(jarEntry)) {
+                            byte[] bytes = generateClass(is);
+                            if (bytes != null) {
+                                jos.write(bytes);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        try (InputStream is = jarFile.getInputStream(jarEntry)) {
+                            jos.write(IOUtils.toByteArray(is));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    jos.closeEntry();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (jos != null) {
+                    try {
+                        jos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (fos != null) {
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (jarFile != null) {
+                    try {
+                        jarFile.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            if (tempFile.exists()) {
+                FileUtils.copyFile(tempFile, dest);
+                // 删除临时文件
+                FileUtils.forceDelete(tempFile);
+            }
+        } else {
+            FileUtils.copyFile(inputFile, dest);
+        }
     }
+
+//    /**
+//     * 遍历DirectoryInput
+//     *
+//     * @param directoryInputs 待遍历集合
+//     * @param outputProvider  输出Provider
+//     */
+//    private void traverseDirectoryInput(Collection<DirectoryInput> directoryInputs,
+//                                        TransformOutputProvider outputProvider) throws IOException {
+//        if (directoryInputs != null && directoryInputs.size() > 0) {
+//            for (DirectoryInput dirInput : directoryInputs) {
+//                if (dirInput == null) {
+//                    continue;
+//                }
+//                File inputFile = dirInput.getFile();
+//                traverseDirectory(inputFile);
+//                // 将处理之后的目录拷贝到输出目录
+//                File outputFile = outputProvider.getContentLocation(
+//                        dirInput.getName(), dirInput.getContentTypes(), dirInput.getScopes(), Format.DIRECTORY);
+//                FileUtils.copyDirectory(inputFile, outputFile);
+//            }
+//        }
+//    }
 
     /**
      * 遍历DirectoryInput
      *
-     * @param directoryInputs 待遍历集合
-     * @param outputProvider  输出Provider
+     * @param dirInput       待遍历数据
+     * @param outputProvider 输出Provider
+     * @param isIncremental  是否支持增量更新
      */
-    private void traverseDirectoryInput(Collection<DirectoryInput> directoryInputs,
-                                        TransformOutputProvider outputProvider) throws IOException {
-        if (directoryInputs != null && directoryInputs.size() > 0) {
-            for (DirectoryInput dirInput : directoryInputs) {
-                if (dirInput == null) {
-                    continue;
+    private void traverseDirectoryInput(DirectoryInput dirInput,
+                                        TransformOutputProvider outputProvider, boolean isIncremental) throws IOException {
+        if (dirInput == null) {
+            return;
+        }
+
+        File dest = outputProvider.getContentLocation(
+                dirInput.getName(), dirInput.getContentTypes(), dirInput.getScopes(), Format.DIRECTORY);
+        FileUtils.forceMkdir(dest);
+
+        if (isIncremental) { // 增量更新
+            String srcDirPath = dirInput.getFile().getAbsolutePath();
+            String destDirPath = dest.getAbsolutePath();
+
+            Map<File, Status> fileStatusMap = dirInput.getChangedFiles();
+            for (Map.Entry<File, Status> changedFile : fileStatusMap.entrySet()) {
+                Status status = changedFile.getValue();
+                File inputFile = changedFile.getKey();
+                String destFilePath = inputFile.getAbsolutePath().replace(srcDirPath, destDirPath);
+                File destFile = new File(destFilePath);
+                switch (status) {
+                    case NOTCHANGED:
+                        // 不做任何处理，仅仅复制提供给下一个Transform
+                        FileUtils.copyFile(inputFile, dest);
+                        break;
+                    case ADDED:
+                    case CHANGED:
+                        traverseDirectory(inputFile);
+                        FileUtils.touch(destFile);
+                        FileUtils.copyFile(inputFile, destFile);
+                        break;
+                    case REMOVED:
+                        if (destFile.exists()) {
+                            FileUtils.forceDelete(destFile);
+                        }
+                        break;
                 }
-                File inputFile = dirInput.getFile();
-                traverseDirectory(inputFile);
-                // 将处理之后的目录拷贝到输出目录
-                File outputFile = outputProvider.getContentLocation(
-                        dirInput.getName(), dirInput.getContentTypes(), dirInput.getScopes(), Format.DIRECTORY);
-                FileUtils.copyDirectory(inputFile, outputFile);
             }
+        } else { // 非增量更新
+            File inputFile = dirInput.getFile();
+            traverseDirectory(inputFile);
+            FileUtils.copyDirectory(inputFile, dest);
         }
     }
 

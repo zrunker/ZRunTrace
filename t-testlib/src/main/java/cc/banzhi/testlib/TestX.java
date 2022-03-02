@@ -10,7 +10,7 @@ import cc.banzhi.runtrace_api.RunTraceObserver;
 import cc.banzhi.runtrace_api.utils.DateUtil;
 
 
-@RunTrace(enableTime = true, enableUpload = true)
+@RunTrace(enableTime = true, enableUpload = true, enableLog = true)
 public class TestX {
     private int num;
 
