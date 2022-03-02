@@ -46,8 +46,10 @@ import cc.banzhi.runtrace.transform.generate.GenerateClassVisitor;
  * @create: 2022/1/13 5:11 下午
  **/
 public class RunTraceTransform extends Transform {
-
-    private WaitableExecutor waitableExecutor = WaitableExecutor.useGlobalSharedThreadPool();
+    /**
+     * 异步任务
+     */
+    private final WaitableExecutor waitableExecutor = WaitableExecutor.useGlobalSharedThreadPool();
 
     /**
      * 为Transform定义一个唯一的名称
