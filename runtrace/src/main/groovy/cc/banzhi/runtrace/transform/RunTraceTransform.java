@@ -36,7 +36,6 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
-import cc.banzhi.runtrace.transform.analyze.AnalyzeClassVisitor;
 import cc.banzhi.runtrace.transform.generate.GenerateClassVisitor;
 
 /**
@@ -210,13 +209,6 @@ public class RunTraceTransform extends Transform {
                     // 处理Class
                     if (checkClass(entryName)) {
                         System.out.println("处理Class：" + entryName);
-                        // 解析
-                        try (InputStream is = jarFile.getInputStream(jarEntry)) {
-                            analyzeClass(is);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
                         // 生成
                         try (InputStream is = jarFile.getInputStream(jarEntry)) {
                             byte[] bytes = generateClass(is);
@@ -356,13 +348,6 @@ public class RunTraceTransform extends Transform {
             if (file.isFile()) {
                 String fileName = file.getName();
                 if (checkClass(fileName)) {
-                    // 解析
-                    try (FileInputStream is = new FileInputStream(file)) {
-                        analyzeClass(is);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
                     // 生成
                     FileInputStream is = null;
                     FileOutputStream os = null;
@@ -401,19 +386,6 @@ public class RunTraceTransform extends Transform {
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * ASM解析Class
-     *
-     * @param is 待处理Class文件输入流
-     */
-    private void analyzeClass(InputStream is) throws IOException {
-        if (is != null && is.available() > 0) {
-            ClassReader classReader = new ClassReader(is);
-            ClassVisitor classVisitor = new AnalyzeClassVisitor(Opcodes.ASM7);
-            classReader.accept(classVisitor, ClassReader.SKIP_FRAMES);
         }
     }
 
