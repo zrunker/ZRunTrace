@@ -11,7 +11,7 @@ import org.objectweb.asm.Opcodes;
  * @create: 2022/1/24 10:56 下午
  **/
 public class GenerateMethodVisitor extends MethodVisitor {
-    private String className;
+    private final String className;
     private boolean isRunTrace;
 
     public GenerateMethodVisitor(int api, MethodVisitor methodVisitor, String className) {
