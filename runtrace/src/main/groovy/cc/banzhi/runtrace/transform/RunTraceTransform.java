@@ -159,7 +159,6 @@ public class RunTraceTransform extends Transform {
         File dest = outputProvider.getContentLocation(md5Name + jarName,
                 jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
 
-
         // 支持增量更新
         if (isIncremental) {
             Status status = jarInput.getStatus();
@@ -181,7 +180,14 @@ public class RunTraceTransform extends Transform {
             }
         }
 
-        if (inputFile.getAbsolutePath().endsWith(".jar")) {
+        if (inputFile.getAbsolutePath().endsWith(".jar")
+
+                && !jarName.startsWith("androidx.")
+                && !jarName.startsWith("org.jetbrains")
+                && !jarName.startsWith("com.squareup.")
+                && !jarName.startsWith("com.google.")
+                && !jarName.startsWith("org.apache.")
+                && !jarName.startsWith("org.slf4j")) {
             File tempFile = null;
             FileOutputStream fos = null;
             JarOutputStream jos = null;
