@@ -20,7 +20,7 @@ dependencies {
 
 2）在`MainActivity`中添加注解测试方法`public int add(int a, int b)`：
 
-```java
+```
 // 编译之前代码
 public class MainActivity extends AppCompatActivity {
   	...
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
 3）将工程进行build操作，之后在build/intermediates/javac/debug/classes目录下找到`MainActivity.class`文件，打开文件查看执行结果：
 
-```java
+```
 public class MainActivity extends AppCompatActivity {
   	...
   
