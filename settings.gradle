@@ -1,4 +1,6 @@
 rootProject.name = "ZRunTrace"
 include ':app'
 include ':runtrace'
-include ':testlib'
+include ':runtrace-api'
+include ':t-testlib'
+include ':t-commonlib'
