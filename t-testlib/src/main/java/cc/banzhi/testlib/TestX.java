@@ -5,12 +5,12 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.List;
 
-import cc.banzhi.runtrace_api.RunTrace;
 import cc.banzhi.runtrace_api.RunTraceObserver;
+import cc.banzhi.runtrace_api.code.CodeTrace;
 import cc.banzhi.runtrace_api.utils.DateUtil;
 
 
-@RunTrace(enableTime = true, enableUpload = true, enableLog = true)
+@CodeTrace(enableTime = true, enableUpload = true, enableLog = true)
 public class TestX {
     private int num;
 
@@ -38,27 +38,27 @@ public class TestX {
     private static void init() {
     }
 
-    @RunTrace(enableTime = true, level = Log.VERBOSE, enableLog = false)
+    @CodeTrace(enableTime = true, level = Log.VERBOSE, enableLog = false)
     private static void initTest2(Object name, int index) {
     }
 
-    @RunTrace(enableTime = true, level = Log.DEBUG, enableObserver = false)
+    @CodeTrace(enableTime = true, level = Log.DEBUG, enableObserver = false)
     private void initTest3(Object name, int index) {
     }
 
-    @RunTrace(enableTime = true)
+    @CodeTrace(enableTime = true)
     private static void initTest4(Object name, int index) {
     }
 
-    @RunTrace(enableTime = true, level = Log.WARN)
+    @CodeTrace(enableTime = true, level = Log.WARN)
     private static void initTest5(Object name, int index) {
     }
 
-    @RunTrace(enableTime = true, level = Log.ERROR)
+    @CodeTrace(enableTime = true, level = Log.ERROR)
     private static void initTest6(Object name, int index) {
     }
 
-    @RunTrace(enableTime = true)
+    @CodeTrace(enableTime = true)
     private static void initTest7(Object name, int index) {
         Log.d("TestX",
                 "\n------------<init>---------------" +
@@ -67,7 +67,7 @@ public class TestX {
                         "\n------------<init>---------------");
     }
 
-    @RunTrace(aliasName = "测试", enableTime = true, enableUpload = true)
+    @CodeTrace(aliasName = "测试", enableTime = true, enableUpload = true)
     private void initTest(Object name, int index,
                           HashMap<String, Object> map, String[] arrs,
                           float a, double b, char c, Long d, short e,

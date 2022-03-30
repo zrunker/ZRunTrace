@@ -3,6 +3,8 @@ package cc.banzhi.runtrace_api;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import cc.banzhi.runtrace_api.code.ICodeTrace;
+
 /**
  * @program: ZRunTrace
  * @description: 监测信息观察者
@@ -36,8 +38,8 @@ public class RunTraceObserver {
                                 HashMap<String, Object> paramMap) {
         if (list.size() > 0) {
             for (IRunTrace item : list) {
-                if (item != null) {
-                    item.runTrace(tag, level, isUpload, paramMap);
+                if (item instanceof ICodeTrace) {
+                    ((ICodeTrace) item).runTrace(tag, level, isUpload, paramMap);
                 }
             }
         }
@@ -55,8 +57,8 @@ public class RunTraceObserver {
                                long time) {
         if (list.size() > 0) {
             for (IRunTrace item : list) {
-                if (item != null) {
-                    item.runTime(tag, level, isUpload, time);
+                if (item instanceof ICodeTrace) {
+                    ((ICodeTrace) item).runTime(tag, level, isUpload, time);
                 }
             }
         }

@@ -18,3 +18,4 @@ local.properties
 /buildSrc/build/
 /.idea/
 /runtrace/build/
+/runtrace/src/main/groovy/cc/banzhi/runtrace/core/

@@ -1,18 +1,11 @@
-package cc.banzhi.runtrace.transform;
+package cc.banzhi.runtrace.transforms.code;
 
 
 import com.android.build.api.transform.DirectoryInput;
 import com.android.build.api.transform.Format;
 import com.android.build.api.transform.JarInput;
-import com.android.build.api.transform.QualifiedContent;
 import com.android.build.api.transform.Status;
-import com.android.build.api.transform.Transform;
-import com.android.build.api.transform.TransformException;
-import com.android.build.api.transform.TransformInput;
-import com.android.build.api.transform.TransformInvocation;
 import com.android.build.api.transform.TransformOutputProvider;
-import com.android.build.gradle.internal.pipeline.TransformManager;
-import com.android.ide.common.internal.WaitableExecutor;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -27,109 +20,31 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
-import cc.banzhi.runtrace.transform.analyze.AnalyzeClassVisitor;
-import cc.banzhi.runtrace.transform.generate.GenerateClassVisitor;
+import cc.banzhi.runtrace.transforms.BaseTransform;
+import cc.banzhi.runtrace.transforms.code.analyze.AnalyzeClassVisitor;
+import cc.banzhi.runtrace.transforms.code.generate.GenerateClassVisitor;
 
 /**
  * @program: ZRunTrace
- * @description: 自定义Transform处理注解
+ * @description: 代码层级埋点监听，基于注解@RunTrace
  * @author: zoufengli01
  * @create: 2022/1/13 5:11 下午
  **/
-public class RunTraceTransform extends Transform {
-    /**
-     * 异步任务
-     */
-    private final WaitableExecutor waitableExecutor = WaitableExecutor.useGlobalSharedThreadPool();
+public class CodeTraceTransform extends BaseTransform {
 
     /**
      * 为Transform定义一个唯一的名称
      */
     @Override
-    public String getName() {
-        return "RunTraceTransform";
-    }
-
-    /**
-     * 定义Transform接收的输入文件类型
-     */
-    @Override
-    public Set<QualifiedContent.ContentType> getInputTypes() {
-        // Class输入
-        return TransformManager.CONTENT_CLASS;
-    }
-
-    /**
-     * 定义Transform的作用域
-     */
-    @Override
-    public Set<? super QualifiedContent.Scope> getScopes() {
-        // 作用域为整个项目，可应用于app模块，不能应用于lib，否则会出现如下异常：
-        // Transforms with scopes '[SUB_PROJECTS, EXTERNAL_LIBRARIES]' cannot be applied to library projects.
-        // 如果想要在lib上使用可以设置为TransformManager.PROJECT_ONLY
-        return TransformManager.SCOPE_FULL_PROJECT;
-    }
-
-    /**
-     * 是否支持增量
-     */
-    @Override
-    public boolean isIncremental() {
-        return true;
-    }
-
-    /**
-     * Transform的执行主函数
-     */
-    @Override
-    public void transform(TransformInvocation transformInvocation)
-            throws TransformException, InterruptedException, IOException {
-        super.transform(transformInvocation);
-        System.out.println("执行------RunTraceTransform------");
-        TransformOutputProvider outputProvider = transformInvocation.getOutputProvider();
-        boolean isIncremental = transformInvocation.isIncremental();
-        if (!isIncremental) {
-            outputProvider.deleteAll();
-        }
-        // 遍历输入目录
-        Collection<TransformInput> inputs = transformInvocation.getInputs();
-        for (TransformInput input : inputs) {
-            // 遍历jar包，（Module和AAR等第三方引用，一般情况下会以classes.jar的方式存在）
-            Collection<JarInput> jarInputs = input.getJarInputs();
-            if (jarInputs != null && jarInputs.size() > 0) {
-                for (JarInput jarInput : jarInputs) {
-                    // 开启异步并发
-                    waitableExecutor.execute(() -> {
-                        traverseJarInput(jarInput, outputProvider, isIncremental);
-                        return null;
-                    });
-                }
-            }
-
-            // 遍历dir目录，（一般情况下为当前引入插件的Module目录）
-            Collection<DirectoryInput> directoryInputs = input.getDirectoryInputs();
-            if (directoryInputs != null && directoryInputs.size() > 0) {
-                for (DirectoryInput dirInput : directoryInputs) {
-                    // 开启异步并发
-                    waitableExecutor.execute(() -> {
-                        traverseDirectoryInput(dirInput, outputProvider, isIncremental);
-                        return null;
-                    });
-                }
-            }
-        }
-
-        // 等待所有任务结束
-        waitableExecutor.waitForTasksWithQuickFail(true);
+    protected String getTaskName() {
+        return "CodeTraceTransform";
     }
 
     /**
@@ -139,8 +54,9 @@ public class RunTraceTransform extends Transform {
      * @param outputProvider 输出Provider
      * @param isIncremental  是否支持增量更新
      */
-    private void traverseJarInput(JarInput jarInput,
-                                  TransformOutputProvider outputProvider, boolean isIncremental) throws IOException {
+    @Override
+    protected void traverseJarInput(JarInput jarInput,
+                                    TransformOutputProvider outputProvider, boolean isIncremental) throws IOException {
         if (jarInput == null) {
             return;
         }
@@ -181,13 +97,7 @@ public class RunTraceTransform extends Transform {
         }
 
         if (inputFile.getAbsolutePath().endsWith(".jar")
-
-                && !jarName.startsWith("androidx.")
-                && !jarName.startsWith("org.jetbrains")
-                && !jarName.startsWith("com.squareup.")
-                && !jarName.startsWith("com.google.")
-                && !jarName.startsWith("org.apache.")
-                && !jarName.startsWith("org.slf4j")) {
+                && checkJar(jarName)) {
             File tempFile = null;
             FileOutputStream fos = null;
             JarOutputStream jos = null;
@@ -271,29 +181,6 @@ public class RunTraceTransform extends Transform {
         }
     }
 
-//    /**
-//     * 遍历DirectoryInput
-//     *
-//     * @param directoryInputs 待遍历集合
-//     * @param outputProvider  输出Provider
-//     */
-//    private void traverseDirectoryInput(Collection<DirectoryInput> directoryInputs,
-//                                        TransformOutputProvider outputProvider) throws IOException {
-//        if (directoryInputs != null && directoryInputs.size() > 0) {
-//            for (DirectoryInput dirInput : directoryInputs) {
-//                if (dirInput == null) {
-//                    continue;
-//                }
-//                File inputFile = dirInput.getFile();
-//                traverseDirectory(inputFile);
-//                // 将处理之后的目录拷贝到输出目录
-//                File outputFile = outputProvider.getContentLocation(
-//                        dirInput.getName(), dirInput.getContentTypes(), dirInput.getScopes(), Format.DIRECTORY);
-//                FileUtils.copyDirectory(inputFile, outputFile);
-//            }
-//        }
-//    }
-
     /**
      * 遍历DirectoryInput
      *
@@ -301,8 +188,9 @@ public class RunTraceTransform extends Transform {
      * @param outputProvider 输出Provider
      * @param isIncremental  是否支持增量更新
      */
-    private void traverseDirectoryInput(DirectoryInput dirInput,
-                                        TransformOutputProvider outputProvider, boolean isIncremental) throws IOException {
+    @Override
+    protected void traverseDirectoryInput(DirectoryInput dirInput,
+                                          TransformOutputProvider outputProvider, boolean isIncremental) throws IOException {
         if (dirInput == null) {
             return;
         }
@@ -431,6 +319,15 @@ public class RunTraceTransform extends Transform {
             return classWriter.toByteArray();
         }
         return null;
+    }
+
+    private boolean checkJar(String jarName) {
+        return !jarName.startsWith("androidx.")
+                && !jarName.startsWith("org.jetbrains")
+                && !jarName.startsWith("com.squareup.")
+                && !jarName.startsWith("com.google.")
+                && !jarName.startsWith("org.apache.")
+                && !jarName.startsWith("org.slf4j");
     }
 
     private boolean checkClass(String className) {

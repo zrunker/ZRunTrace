@@ -1,4 +1,4 @@
-package cc.banzhi.runtrace.transform.generate;
+package cc.banzhi.runtrace.transforms.code.generate;
 
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -7,9 +7,9 @@ import org.objectweb.asm.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import cc.banzhi.runtrace.transform.analyze.dto.AnalyzeMethodBean;
-import cc.banzhi.runtrace.transform.analyze.dto.AnalyzeVariableBean;
-import cc.banzhi.runtrace.transform.utils.TransformUtil;
+import cc.banzhi.runtrace.transforms.code.analyze.dto.AnalyzeMethodBean;
+import cc.banzhi.runtrace.transforms.code.analyze.dto.AnalyzeVariableBean;
+import cc.banzhi.runtrace.transforms.code.utils.TransformUtil;
 
 /**
  * @program: ZRunTrace

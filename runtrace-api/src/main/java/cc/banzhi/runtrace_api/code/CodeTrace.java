@@ -1,4 +1,4 @@
-package cc.banzhi.runtrace_api;
+package cc.banzhi.runtrace_api.code;
 
 import android.util.Log;
 
@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  **/
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface RunTrace {
+public @interface CodeTrace {
 
     // Trace别名
     String aliasName() default "";

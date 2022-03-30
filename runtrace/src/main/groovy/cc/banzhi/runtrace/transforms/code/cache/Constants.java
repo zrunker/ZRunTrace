@@ -1,4 +1,4 @@
-package cc.banzhi.runtrace.transform.cache;
+package cc.banzhi.runtrace.transforms.code.cache;
 
 /**
  * @program: ZRunTrace
@@ -8,5 +8,5 @@ package cc.banzhi.runtrace.transform.cache;
  **/
 public class Constants {
     // 注解签名
-    public static String ANNOTATION_NAME = "Lcc/banzhi/runtrace_api/RunTrace;";
+    public static String ANNOTATION_NAME = "Lcc/banzhi/runtrace_api/code/CodeTrace;";
 }
