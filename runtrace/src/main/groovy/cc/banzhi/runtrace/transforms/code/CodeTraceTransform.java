@@ -90,10 +90,11 @@ public class CodeTraceTransform extends BaseTransform {
                 // 不做任何处理，仅仅复制提供给下一个Transform
                 FileUtils.copyFile(inputFile, dest);
                 return;
-            } else if (status == Status.ADDED
-                    || status == Status.CHANGED) {
-                // 正常处理，向下执行
             }
+//            else if (status == Status.ADDED
+//                    || status == Status.CHANGED) {
+//                // 正常处理，向下执行
+//            }
         }
 
         if (inputFile.getAbsolutePath().endsWith(".jar")
@@ -252,10 +253,8 @@ public class CodeTraceTransform extends BaseTransform {
                     }
 
                     // 生成
-                    FileInputStream is = null;
                     FileOutputStream os = null;
-                    try {
-                        is = new FileInputStream(file);
+                    try (FileInputStream is = new FileInputStream(file)) {
                         byte[] bytes = generateClass(is);
                         if (bytes != null && bytes.length > 0) {
                             os = new FileOutputStream(file);
@@ -265,13 +264,6 @@ public class CodeTraceTransform extends BaseTransform {
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {
-                        if (is != null) {
-                            try {
-                                is.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
                         if (os != null) {
                             try {
                                 os.close();
@@ -321,33 +313,4 @@ public class CodeTraceTransform extends BaseTransform {
         return null;
     }
 
-    private boolean checkJar(String jarName) {
-        return !jarName.startsWith("androidx.")
-                && !jarName.startsWith("org.jetbrains")
-                && !jarName.startsWith("com.squareup.")
-                && !jarName.startsWith("com.google.")
-                && !jarName.startsWith("org.apache.")
-                && !jarName.startsWith("org.slf4j");
-    }
-
-    private boolean checkClass(String className) {
-        if (className.endsWith(".class")
-                && !className.startsWith("androidx/")
-                && !className.startsWith("android/")
-                && !className.startsWith("com/google/android/material/")
-                && !className.startsWith("cc/banzhi/runtrace_api/")) {
-            int position = className.lastIndexOf("/");
-            if (position > 0) {
-                try {
-                    className = className.substring(position + 1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            return !className.startsWith("R$")
-                    && !className.equals("R.class")
-                    && !className.equals("BuildConfig.class");
-        }
-        return false;
-    }
 }

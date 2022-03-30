@@ -132,4 +132,34 @@ public abstract class BaseTransform extends Transform {
         // 等待所有任务结束
         waitableExecutor.waitForTasksWithQuickFail(true);
     }
+
+    protected boolean checkJar(String jarName) {
+        return !jarName.startsWith("androidx.")
+                && !jarName.startsWith("org.jetbrains")
+                && !jarName.startsWith("com.squareup.")
+                && !jarName.startsWith("com.google.")
+                && !jarName.startsWith("org.apache.")
+                && !jarName.startsWith("org.slf4j");
+    }
+
+    protected boolean checkClass(String className) {
+        if (className.endsWith(".class")
+                && !className.startsWith("androidx/")
+                && !className.startsWith("android/")
+                && !className.startsWith("com/google/android/material/")
+                && !className.startsWith("cc/banzhi/runtrace_api/")) {
+            int position = className.lastIndexOf("/");
+            if (position > 0) {
+                try {
+                    className = className.substring(position + 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return !className.startsWith("R$")
+                    && !className.equals("R.class")
+                    && !className.equals("BuildConfig.class");
+        }
+        return false;
+    }
 }
