@@ -6,5 +6,5 @@ package cc.banzhi.runtrace_api;
  * @author: zoufengli01
  * @create: 2022/1/25 3:29 下午
  **/
-public interface IRunTrace {
+public interface IRunTraceLisenter {
 }

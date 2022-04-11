@@ -2,13 +2,15 @@ package cc.banzhi.runtrace_api.click;
 
 import android.view.View;
 
+import cc.banzhi.runtrace_api.IRunTraceLisenter;
+
 /**
  * @program: ZRunTrace
  * @description:
  * @author: zoufengli01
  * @create: 2022/3/30 4:39 下午
  **/
-public interface IClickTrace {
+public interface IClickTrace extends IRunTraceLisenter {
 
     /**
      * 监听点击事件

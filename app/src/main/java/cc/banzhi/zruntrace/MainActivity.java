@@ -1,5 +1,6 @@
 package cc.banzhi.zruntrace;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,11 +11,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cc.banzhi.runtrace_api.RunTrace;
+import cc.banzhi.runtrace_api.RunTraceObserver;
+import cc.banzhi.runtrace_api.click.IClickTrace;
 import cc.banzhi.runtrace_api.code.CodeTrace;
 import cc.banzhi.testlib.TestX;
 
 @CodeTrace
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        RunTrace.addClickTrace(new IClickTrace() {
+            @Override
+            public void runClick(String tag, View v) {
+                Log.e("MainActivity=", "tag：" + tag + " v：" + v.getId());
+            }
+        });
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,13 +40,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
 
-                Log.d("MainActivity", "测试");
+                Log.d("MainActivity", "测试-1");
             }
         });
 
         findViewById(R.id.tv_test).setOnClickListener(v -> {
 
-            Log.d("MainActivity", "测试");
+            Log.d("MainActivity", "测试-2");
         });
 
         init("onCreate", 100);
@@ -107,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-
+        RunTraceObserver.runClick("MainActivity", v);
+        add(1, 1);
     }
 }

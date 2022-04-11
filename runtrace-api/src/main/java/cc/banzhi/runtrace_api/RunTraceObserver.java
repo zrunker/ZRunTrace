@@ -15,15 +15,15 @@ import cc.banzhi.runtrace_api.code.ICodeTrace;
  * @create: 2022/1/24 6:46 下午
  **/
 public class RunTraceObserver {
-    private static final ArrayList<IRunTrace> list = new ArrayList<>();
+    private static final ArrayList<IRunTraceLisenter> list = new ArrayList<>();
 
-    public static void addRunTrace(IRunTrace iRunTrace) {
+    public static void addRunTrace(IRunTraceLisenter iRunTrace) {
         if (iRunTrace != null) {
             list.add(iRunTrace);
         }
     }
 
-    public static void removeRunTrace(IRunTrace iRunTrace) {
+    public static void removeRunTrace(IRunTraceLisenter iRunTrace) {
         if (iRunTrace != null) {
             list.remove(iRunTrace);
         }
@@ -40,7 +40,7 @@ public class RunTraceObserver {
     public static void runTrace(String tag, int level, boolean isUpload,
                                 HashMap<String, Object> paramMap) {
         if (list.size() > 0) {
-            for (IRunTrace item : list) {
+            for (IRunTraceLisenter item : list) {
                 if (item instanceof ICodeTrace) {
                     ((ICodeTrace) item).runTrace(tag, level, isUpload, paramMap);
                 }
@@ -59,7 +59,7 @@ public class RunTraceObserver {
     public static void runTime(String tag, int level, boolean isUpload,
                                long time) {
         if (list.size() > 0) {
-            for (IRunTrace item : list) {
+            for (IRunTraceLisenter item : list) {
                 if (item instanceof ICodeTrace) {
                     ((ICodeTrace) item).runTime(tag, level, isUpload, time);
                 }
@@ -69,8 +69,8 @@ public class RunTraceObserver {
 
     public static void runClick(String tag, View v) {
         if (list.size() > 0) {
-            for (IRunTrace item : list) {
-                if (item instanceof ICodeTrace) {
+            for (IRunTraceLisenter item : list) {
+                if (item instanceof IClickTrace) {
                     ((IClickTrace) item).runClick(tag, v);
                 }
             }

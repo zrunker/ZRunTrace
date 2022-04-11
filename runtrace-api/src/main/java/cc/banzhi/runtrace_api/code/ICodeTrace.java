@@ -2,7 +2,7 @@ package cc.banzhi.runtrace_api.code;
 
 import java.util.HashMap;
 
-import cc.banzhi.runtrace_api.IRunTrace;
+import cc.banzhi.runtrace_api.IRunTraceLisenter;
 
 /**
  * @program: ZRunTrace
@@ -10,7 +10,7 @@ import cc.banzhi.runtrace_api.IRunTrace;
  * @author: zoufengli01
  * @create: 2022/3/30 4:38 下午
  **/
-public interface ICodeTrace extends IRunTrace {
+public interface ICodeTrace extends IRunTraceLisenter {
 
     /**
      * 基于@RunTrace注解，监听方法参数信息

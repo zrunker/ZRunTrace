@@ -57,6 +57,21 @@ public class ClickLambdaMethodVisitor extends MethodVisitor {
             String descriptor,
             Handle bootstrapMethodHandle,
             Object... bootstrapMethodArguments) {
+        // name = onClick
+        // descriptor = ()Landroid/view/View$OnClickListener;
+
+        // bootstrapMethodHandle = java/lang/invoke/LambdaMetafactory.metafactory(
+        // Ljava/lang/invoke/MethodHandles$Lookup;
+        // Ljava/lang/String;
+        // Ljava/lang/invoke/MethodType;
+        // Ljava/lang/invoke/MethodType;
+        // Ljava/lang/invoke/MethodHandle;
+        // Ljava/lang/invoke/MethodType;
+        // )Ljava/lang/invoke/CallSite; (6)
+
+        // bootstrapMethodArguments = [(Landroid/view/View;)V,
+        // cc/banzhi/zruntrace/MainActivity.lambda$onCreate$0(Landroid/view/View;)V (6),
+        // (Landroid/view/View;)V]
         List<Object> argumentList = Arrays.asList(bootstrapMethodArguments);
         if ("onClick".equals(name)
                 && "()Landroid/view/View$OnClickListener;".equals(descriptor)
@@ -85,9 +100,12 @@ public class ClickLambdaMethodVisitor extends MethodVisitor {
                 }
                 middleMethodDesc.append(methodImplType.getDescriptor().replace("(", ""));
             }
-            // lambda$onCreate$trace0
+            // 定义方法名：lambda$「外部方法名」$trace「增量」
             String middleMethodName = "lambda$" + name + "$trace" + count;
-
+            // 获取方法Type
+            Type middleMethodType = Type.getType(middleMethodDesc.toString());
+            // 获取方法参数数组
+            Type[] argumentTypes = middleMethodType.getArgumentTypes();
 
             // invokeDynamic原先的MethodHandle
             Handle oldMethodHandle = (Handle) argumentList.get(1);
@@ -101,6 +119,23 @@ public class ClickLambdaMethodVisitor extends MethodVisitor {
                     new MethodNode(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC,
                             middleMethodName, middleMethodDesc.toString(), null, null);
             methodNode.visitCode();
+
+            // 插入埋点监控，一定会有View参数
+            methodNode.visitLdcInsn(className);
+            if (argumentTypes.length > 0) {
+                int index = 0;
+                for (Type item : argumentTypes) {
+                    if ("Landroid/view/View;".equals(item.getDescriptor())) {
+                        methodNode.visitVarInsn(item.getOpcode(Opcodes.ILOAD), index);
+                        break;
+                    }
+                    index += item.getSize();
+                }
+            }
+            methodNode.visitMethodInsn(Opcodes.INVOKESTATIC, "cc/banzhi/runtrace_api/RunTraceObserver",
+                    "runClick", "(Ljava/lang/String;Landroid/view/View;)V", false);
+
+            // 定义Opcode
             int opcode;
             switch (oldMethodHandle.getTag()) {
                 case Opcodes.H_INVOKEINTERFACE:
@@ -125,13 +160,11 @@ public class ClickLambdaMethodVisitor extends MethodVisitor {
                     break;
             }
 
-            Type middleMethodType = Type.getType(middleMethodDesc.toString());
-            Type[] argumentTypes = middleMethodType.getArgumentTypes();
             if (argumentTypes.length > 0) {
-                int loadIndex = 0;
+                int index = 0;
                 for (Type item : argumentTypes) {
-                    methodNode.visitVarInsn(item.getOpcode(Opcodes.ILOAD), loadIndex);
-                    loadIndex += item.getSize();
+                    methodNode.visitVarInsn(item.getOpcode(Opcodes.ILOAD), index);
+                    index += item.getSize();
                 }
             }
 
@@ -148,16 +181,19 @@ public class ClickLambdaMethodVisitor extends MethodVisitor {
         } else {
             super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
         }
+    }
 
-        // name = onClick
-        // descriptor = ()Landroid/view/View$OnClickListener;
-        // bootstrapMethodHandle = java/lang/invoke/LambdaMetafactory.metafactory(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite; (6)
-        // bootstrapMethodArguments = [(Landroid/view/View;)V,
-        // cc/banzhi/zruntrace/MainActivity.lambda$onCreate$0(Landroid/view/View;)V (6),
-        // (Landroid/view/View;)V]
-        System.out.println("name = " + name);
-        System.out.println("descriptor = " + descriptor);
-        System.out.println("bootstrapMethodHandle = " + bootstrapMethodHandle);
-        System.out.println("bootstrapMethodArguments = " + Arrays.toString(bootstrapMethodArguments));
+    /**
+     * 生成中间方法
+     */
+    private void generateMiddleMethod() {
+
+    }
+
+    /**
+     * 生成监控
+     */
+    private void generateObserver() {
+
     }
 }
