@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ClickClassVisitor extends ClassVisitor {
     // 类名称
     private String className;
-    private AtomicInteger mCounter = new AtomicInteger(0);
+    private final AtomicInteger mCounter = new AtomicInteger(0);
 
     public ClickClassVisitor(int api, ClassVisitor classVisitor) {
         super(api, classVisitor);
@@ -39,7 +39,7 @@ public class ClickClassVisitor extends ClassVisitor {
             return new ClickMethodVisitor(Opcodes.ASM7,
                     cv.visitMethod(access, name, descriptor, signature, exceptions),
                     className);
-        } else {
+        } else { // Lambda
             return new ClickLambdaMethodVisitor(Opcodes.ASM7,
                     cv.visitMethod(access, name, descriptor, signature, exceptions),
                     className, cv, mCounter.incrementAndGet());

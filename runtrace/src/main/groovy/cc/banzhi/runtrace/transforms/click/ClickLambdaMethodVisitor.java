@@ -78,15 +78,15 @@ public class ClickLambdaMethodVisitor extends MethodVisitor {
                 && argumentList.size() > 2) {
             // 函数式接口描述符，参数+返回值
             Type descriptorType = Type.getType(descriptor);
-            // 方法参数描述符
-            Type methodType = (Type) argumentList.get(0);
-            // 方法描述描述符
-            String methodDesc = methodType.getDescriptor();
-            // 实现方法参数描述符
+            // 实现方法参数描述符，(Landroid/view/View;)V
             Type methodImplType = (Type) argumentList.get(2);
+//            // 方法参数描述符
+//            Type methodType = (Type) argumentList.get(0);
+//            // 方法描述描述符
+//            String methodDesc = methodType.getDescriptor();
 
-            // 方法签名，方法名+参数+返回值，onClick(Landroid/view/View;)V
-            String methodNameAndDesc = name + methodDesc;
+//            // 方法签名，方法名+参数+返回值，onClick(Landroid/view/View;)V
+//            String methodNameAndDesc = name + methodDesc;
 
             // 函数式接口参数描述符
             Type[] types = descriptorType.getArgumentTypes();
@@ -98,8 +98,10 @@ public class ClickLambdaMethodVisitor extends MethodVisitor {
                 for (Type item : types) {
                     middleMethodDesc.append(item.getDescriptor());
                 }
-                middleMethodDesc.append(methodImplType.getDescriptor().replace("(", ""));
+                middleMethodDesc.append(
+                        methodImplType.getDescriptor().replace("(", ""));
             }
+
             // 定义方法名：lambda$「外部方法名」$trace「增量」
             String middleMethodName = "lambda$" + name + "$trace" + count;
             // 获取方法Type
@@ -108,8 +110,9 @@ public class ClickLambdaMethodVisitor extends MethodVisitor {
             Type[] argumentTypes = middleMethodType.getArgumentTypes();
 
             // invokeDynamic原先的MethodHandle
+            // cc/banzhi/zruntrace/MainActivity.lambda$onCreate$0(Landroid/view/View;)V
             Handle oldMethodHandle = (Handle) argumentList.get(1);
-            // 要替换的MethodHandle
+            // 要替换的MethodHandle，新的MethodHandle
             Handle newMethodHandle = new Handle(
                     Opcodes.H_INVOKESTATIC, className, middleMethodName, middleMethodDesc.toString(), false);
             argumentList.set(1, newMethodHandle);
@@ -181,19 +184,5 @@ public class ClickLambdaMethodVisitor extends MethodVisitor {
         } else {
             super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
         }
-    }
-
-    /**
-     * 生成中间方法
-     */
-    private void generateMiddleMethod() {
-
-    }
-
-    /**
-     * 生成监控
-     */
-    private void generateObserver() {
-
     }
 }
