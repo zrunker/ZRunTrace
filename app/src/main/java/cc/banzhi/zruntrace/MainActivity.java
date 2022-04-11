@@ -25,11 +25,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
 
+                Log.d("MainActivity", "测试");
             }
         });
 
         findViewById(R.id.tv_test).setOnClickListener(v -> {
 
+            Log.d("MainActivity", "测试");
         });
 
         init("onCreate", 100);
