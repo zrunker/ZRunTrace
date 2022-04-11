@@ -19,8 +19,9 @@ class RunTracePlugin implements Plugin<Project> {
             BaseExtension android = project.extensions.getByType(BaseExtension)
             // BaseExtension内部维护着_transforms集合，registerTransform是将TraceTransform实例添加到集合内
             if (android != null) {
+//                // 代码层级埋点
 //                android.registerTransform(new CodeTraceTransform())
-
+                // 点击事件埋点
                 android.registerTransform(new ClickTraceTransform())
             }
         }
