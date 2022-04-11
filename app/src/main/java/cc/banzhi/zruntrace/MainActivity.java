@@ -14,7 +14,7 @@ import cc.banzhi.runtrace_api.code.CodeTrace;
 import cc.banzhi.testlib.TestX;
 
 @CodeTrace
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,5 +101,10 @@ public class MainActivity extends AppCompatActivity {
     public int add(int a, int b) {
         System.out.println("测试a+b");
         return a + b;
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }

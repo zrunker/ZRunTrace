@@ -27,8 +27,6 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
 import cc.banzhi.runtrace.transforms.BaseTransform;
-import cc.banzhi.runtrace.transforms.code.analyze.AnalyzeClassVisitor;
-import cc.banzhi.runtrace.transforms.code.generate.GenerateClassVisitor;
 
 /**
  * @program: ZRunTrace

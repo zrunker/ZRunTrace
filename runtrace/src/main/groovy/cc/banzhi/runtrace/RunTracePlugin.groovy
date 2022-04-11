@@ -1,5 +1,6 @@
 package cc.banzhi.runtrace
 
+import cc.banzhi.runtrace.transforms.click.ClickTraceTransform
 import cc.banzhi.runtrace.transforms.code.CodeTraceTransform
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.plugins.AppPlugin
@@ -18,7 +19,9 @@ class RunTracePlugin implements Plugin<Project> {
             BaseExtension android = project.extensions.getByType(BaseExtension)
             // BaseExtension内部维护着_transforms集合，registerTransform是将TraceTransform实例添加到集合内
             if (android != null) {
-                android.registerTransform(new CodeTraceTransform())
+//                android.registerTransform(new CodeTraceTransform())
+
+                android.registerTransform(new ClickTraceTransform())
             }
         }
     }

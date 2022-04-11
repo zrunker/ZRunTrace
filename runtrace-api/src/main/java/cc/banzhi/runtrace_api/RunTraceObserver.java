@@ -1,8 +1,11 @@
 package cc.banzhi.runtrace_api;
 
+import android.view.View;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import cc.banzhi.runtrace_api.click.IClickTrace;
 import cc.banzhi.runtrace_api.code.ICodeTrace;
 
 /**
@@ -59,6 +62,16 @@ public class RunTraceObserver {
             for (IRunTrace item : list) {
                 if (item instanceof ICodeTrace) {
                     ((ICodeTrace) item).runTime(tag, level, isUpload, time);
+                }
+            }
+        }
+    }
+
+    public static void runClick(String tag, View v) {
+        if (list.size() > 0) {
+            for (IRunTrace item : list) {
+                if (item instanceof ICodeTrace) {
+                    ((IClickTrace) item).runClick(tag, v);
                 }
             }
         }
