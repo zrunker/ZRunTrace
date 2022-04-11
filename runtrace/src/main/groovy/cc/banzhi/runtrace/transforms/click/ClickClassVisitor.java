@@ -36,11 +36,12 @@ public class ClickClassVisitor extends ClassVisitor {
             // 例如，当前遍历到View的onClick方法时，name是onClick，desc是(Landroid/view/View;)V；
             // 则满足修改条件onClick(Landroid/view/View;)V
             // 当第一个条件满足后，还需进一步判断当前类是否实现了View$OnClickListener接口
-            if ("onClick(Landroid/view/View;)V".equals(name + descriptor)
-                    && Arrays.asList(interfaces).contains("android/view/View$OnClickListener")) {
+//            if ("onClick(Landroid/view/View;)V".equals(name + descriptor)
+//                    && Arrays.asList(interfaces).contains("android/view/View$OnClickListener")) {
                 return new ClickMethodVisitor(Opcodes.ASM7,
-                        cv.visitMethod(access, name, descriptor, signature, exceptions), className);
-            }
+                        cv.visitMethod(access, name, descriptor, signature, exceptions),
+                        className, cv);
+//            }
         }
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
