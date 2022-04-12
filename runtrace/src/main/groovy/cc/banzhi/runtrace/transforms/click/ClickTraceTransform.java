@@ -9,6 +9,7 @@ import com.android.build.api.transform.TransformOutputProvider;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.gradle.api.Project;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -35,6 +36,10 @@ import cc.banzhi.runtrace.transforms.BaseTransform;
  * @create: 2022/3/30 3:52 下午
  **/
 public class ClickTraceTransform extends BaseTransform {
+
+    public ClickTraceTransform(Project project) {
+        super(project);
+    }
 
     @Override
     protected String getTaskName() {

@@ -11,9 +11,13 @@ import com.android.build.api.transform.TransformOutputProvider;
 import com.android.build.gradle.internal.pipeline.TransformManager;
 import com.android.ide.common.internal.WaitableExecutor;
 
+import org.gradle.api.Project;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
+
+import cc.banzhi.runtrace.RunTraceExtension;
 
 /**
  * @program: ZRunTrace
@@ -22,6 +26,12 @@ import java.util.Set;
  * @create: 2022/3/30 3:57 下午
  **/
 public abstract class BaseTransform extends Transform {
+    protected final Project project;
+
+    public BaseTransform(Project project) {
+        this.project = project;
+    }
+
 //    /**
 //     * 异步任务
 //     */
@@ -110,7 +120,7 @@ public abstract class BaseTransform extends Transform {
                 for (JarInput jarInput : jarInputs) {
 //                    // 开启异步并发
 //                    waitableExecutor.execute(() -> {
-                        traverseJarInput(jarInput, outputProvider, isIncremental);
+                    traverseJarInput(jarInput, outputProvider, isIncremental);
 //                        return null;
 //                    });
                 }
@@ -122,7 +132,7 @@ public abstract class BaseTransform extends Transform {
                 for (DirectoryInput dirInput : directoryInputs) {
 //                    // 开启异步并发
 //                    waitableExecutor.execute(() -> {
-                        traverseDirectoryInput(dirInput, outputProvider, isIncremental);
+                    traverseDirectoryInput(dirInput, outputProvider, isIncremental);
 //                        return null;
 //                    });
                 }

@@ -6,7 +6,7 @@ import cc.banzhi.runtrace_api.IRunTraceLisenter;
 
 /**
  * @program: ZRunTrace
- * @description:
+ * @description: @CodeTrace基于注解实现代码层级埋点回调
  * @author: zoufengli01
  * @create: 2022/3/30 4:38 下午
  **/

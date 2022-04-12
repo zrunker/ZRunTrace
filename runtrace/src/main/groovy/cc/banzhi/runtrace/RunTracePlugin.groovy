@@ -1,7 +1,7 @@
 package cc.banzhi.runtrace
 
-import cc.banzhi.runtrace.transforms.click.ClickTraceTransform
-import cc.banzhi.runtrace.transforms.code.CodeTraceTransform
+
+import cc.banzhi.runtrace.transforms.lifecycle.LifeTraceTransform
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.plugins.AppPlugin
 import org.gradle.api.Plugin
@@ -19,11 +19,44 @@ class RunTracePlugin implements Plugin<Project> {
             BaseExtension android = project.extensions.getByType(BaseExtension)
             // BaseExtension内部维护着_transforms集合，registerTransform是将TraceTransform实例添加到集合内
             if (android != null) {
-                // 代码层级埋点
-                android.registerTransform(new CodeTraceTransform())
-                // 点击事件埋点
-                android.registerTransform(new ClickTraceTransform())
+                // 注册Extension
+                RunTraceExtension extension = project.extensions.create("runTraceConfig", RunTraceExtension)
+                project.afterEvaluate {
+                    System.out.println(extension.toString())
+                }
+
+//                // 代码层级埋点
+//                android.registerTransform(new CodeTraceTransform(project))
+//                // 点击事件埋点
+//                android.registerTransform(new ClickTraceTransform(project))
+                // Activity生命周期监测
+                android.registerTransform(new LifeTraceTransform(project))
             }
         }
+    }
+}
+
+class RunTraceExtension {
+    // 是否开启代码层级埋点
+    boolean isOpenCodeTrace = true
+
+    // 是否开启点击事件埋点
+    boolean isOpenClickTrace = true
+
+    // 是否开启Activity生命周期监测
+    boolean isOpenLifeTrace = true
+
+    // Activity父类名称，如androidx/appcompat/app/AppCompatActivity
+    String lifeActivitySuperName = ""
+
+
+    @Override
+    String toString() {
+        return "RunTraceExtension{" +
+                "isOpenCodeTrace=" + isOpenCodeTrace +
+                ", isOpenClickTrace=" + isOpenClickTrace +
+                ", isOpenLifeTrace=" + isOpenLifeTrace +
+                ", lifeActivitySuperName='" + lifeActivitySuperName + '\'' +
+                '}';
     }
 }

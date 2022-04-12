@@ -9,6 +9,7 @@ import com.android.build.api.transform.TransformOutputProvider;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.gradle.api.Project;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -35,6 +36,10 @@ import cc.banzhi.runtrace.transforms.BaseTransform;
  * @create: 2022/4/12 4:28 下午
  **/
 public class LifeTraceTransform extends BaseTransform {
+
+    public LifeTraceTransform(Project project) {
+        super(project);
+    }
 
     @Override
     protected String getTaskName() {
@@ -296,7 +301,7 @@ public class LifeTraceTransform extends BaseTransform {
         if (is != null && is.available() > 0) {
             ClassReader classReader = new ClassReader(is);
             ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
-            ClassVisitor classVisitor = new LifeClassVisitor(Opcodes.ASM7, classWriter);
+            ClassVisitor classVisitor = new LifeClassVisitor(Opcodes.ASM7, classWriter, project);
             classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
             return classWriter.toByteArray();
         }

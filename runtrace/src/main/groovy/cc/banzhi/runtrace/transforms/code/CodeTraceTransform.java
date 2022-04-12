@@ -10,6 +10,7 @@ import com.android.build.api.transform.TransformOutputProvider;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.gradle.api.Project;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -38,6 +39,10 @@ import cc.banzhi.runtrace.transforms.code.generate.GenerateClassVisitor;
  * @create: 2022/1/13 5:11 下午
  **/
 public class CodeTraceTransform extends BaseTransform {
+
+    public CodeTraceTransform(Project project) {
+        super(project);
+    }
 
     /**
      * 为Transform定义一个唯一的名称

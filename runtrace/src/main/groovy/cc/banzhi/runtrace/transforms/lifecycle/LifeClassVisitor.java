@@ -1,8 +1,11 @@
 package cc.banzhi.runtrace.transforms.lifecycle;
 
+import org.gradle.api.Project;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+
+import cc.banzhi.runtrace.RunTraceExtension;
 
 /**
  * @program: ZRunTrace
@@ -13,10 +16,13 @@ import org.objectweb.asm.Opcodes;
 public class LifeClassVisitor extends ClassVisitor {
     // 类名称
     private String className;
-    private String superName;
+    private boolean isExecute;
+    private RunTraceExtension extension;
 
-    public LifeClassVisitor(int api, ClassVisitor classVisitor) {
+    public LifeClassVisitor(int api, ClassVisitor classVisitor, Project project) {
         super(api, classVisitor);
+        extension = project.getExtensions().getByType(RunTraceExtension.class);
+        System.out.println(extension.toString());
     }
 
     @Override
@@ -28,18 +34,25 @@ public class LifeClassVisitor extends ClassVisitor {
                       String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
         this.className = name;
-        this.superName = superName;
+        if (extension != null
+                && extension.getLifeActivitySuperName() != null
+                && "".equals(extension.getLifeActivitySuperName())) {
+            isExecute = extension.getLifeActivitySuperName().equals(superName);
+        } else {
+            isExecute = "android/support/v4/app/FragmentActivity".equals(superName)
+                    || "androidx/appcompat/app/AppCompatActivity".equals(superName);
+        }
     }
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor,
                                      String signature, String[] exceptions) {
-        if ("android/support/v4/app/FragmentActivity".equals(superName)
-                || "androidx/appcompat/app/AppCompatActivity".equals(superName)) {
+        if (isExecute) {
             return new LifeAMethodVisitor(Opcodes.ASM7,
                     cv.visitMethod(access, name, descriptor, signature, exceptions),
                     className, name, descriptor);
         }
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
+
 }
