@@ -4,6 +4,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -15,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ClickClassVisitor extends ClassVisitor {
     // 类名称
     private String className;
+    private String[] mInterfaces;
     private final AtomicInteger mCounter = new AtomicInteger(0);
 
     public ClickClassVisitor(int api, ClassVisitor classVisitor) {
@@ -30,12 +32,14 @@ public class ClickClassVisitor extends ClassVisitor {
                       String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
         this.className = name;
+        this.mInterfaces = interfaces;
     }
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor,
                                      String signature, String[] exceptions) {
-        if ("onClick(Landroid/view/View;)V".equals(name + descriptor)) {
+        if ("onClick(Landroid/view/View;)V".equals(name + descriptor) &&
+                mInterfaces != null && Arrays.asList(mInterfaces).contains("android/view/View$OnClickListener")) {
             return new ClickMethodVisitor(Opcodes.ASM7,
                     cv.visitMethod(access, name, descriptor, signature, exceptions),
                     className);
