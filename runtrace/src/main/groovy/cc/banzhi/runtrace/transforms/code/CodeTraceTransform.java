@@ -245,6 +245,7 @@ public class CodeTraceTransform extends BaseTransform {
             if (file.isFile()) {
                 String fileName = file.getName();
                 if (checkClass(fileName)) {
+                    System.out.println("处理Class：" + fileName);
                     // 解析
                     try (FileInputStream is = new FileInputStream(file)) {
                         analyzeClass(is);
