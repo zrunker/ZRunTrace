@@ -7,14 +7,15 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import cc.banzhi.runtrace_api.RunTrace;
-import cc.banzhi.runtrace_api.RunTraceObserver;
 import cc.banzhi.runtrace_api.click.IClickTrace;
 import cc.banzhi.runtrace_api.code.CodeTrace;
+import cc.banzhi.runtrace_api.code.ICodeTrace;
 import cc.banzhi.testlib.TestX;
 
 @CodeTrace
@@ -26,7 +27,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         RunTrace.addClickTrace(new IClickTrace() {
             @Override
             public void runClick(String tag, View v) {
-                Log.e("MainActivity=", "tag：" + tag + " v：" + v.getId());
+                Log.e("MainActivity：", "runClick = tag：" + tag + " v：" + v.getId());
+            }
+        });
+        RunTrace.addCodeTrace(new ICodeTrace() {
+            @Override
+            public void runTrace(String tag, int level, boolean isUpload, HashMap<String, Object> paramMap) {
+                Log.e("MainActivity：", "runTrace = tag：" + tag + " paramMap：" + paramMap.toString());
+            }
+
+            @Override
+            public void runTime(String tag, int level, boolean isUpload, long time) {
+                Log.e("MainActivity：", "runTime = tag：" + tag + " isUpload：" + isUpload);
             }
         });
     }
@@ -43,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("MainActivity", "测试-1");
             }
         });
+
+        findViewById(R.id.tv_test).setOnClickListener(this);
 
         findViewById(R.id.tv_test).setOnClickListener(v -> {
 
@@ -122,7 +136,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        RunTraceObserver.runClick("MainActivity", v);
-        add(1, 1);
+        Log.d("MainActivity", "测试-3");
     }
 }

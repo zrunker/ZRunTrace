@@ -22,10 +22,10 @@ import java.util.Set;
  * @create: 2022/3/30 3:57 下午
  **/
 public abstract class BaseTransform extends Transform {
-    /**
-     * 异步任务
-     */
-    private final WaitableExecutor waitableExecutor = WaitableExecutor.useGlobalSharedThreadPool();
+//    /**
+//     * 异步任务
+//     */
+//    private final WaitableExecutor waitableExecutor = WaitableExecutor.useGlobalSharedThreadPool();
 
     /**
      * 定义一个任务名称
@@ -108,11 +108,11 @@ public abstract class BaseTransform extends Transform {
             Collection<JarInput> jarInputs = input.getJarInputs();
             if (jarInputs != null && jarInputs.size() > 0) {
                 for (JarInput jarInput : jarInputs) {
-                    // 开启异步并发
-                    waitableExecutor.execute(() -> {
+//                    // 开启异步并发
+//                    waitableExecutor.execute(() -> {
                         traverseJarInput(jarInput, outputProvider, isIncremental);
-                        return null;
-                    });
+//                        return null;
+//                    });
                 }
             }
 
@@ -120,17 +120,17 @@ public abstract class BaseTransform extends Transform {
             Collection<DirectoryInput> directoryInputs = input.getDirectoryInputs();
             if (directoryInputs != null && directoryInputs.size() > 0) {
                 for (DirectoryInput dirInput : directoryInputs) {
-                    // 开启异步并发
-                    waitableExecutor.execute(() -> {
+//                    // 开启异步并发
+//                    waitableExecutor.execute(() -> {
                         traverseDirectoryInput(dirInput, outputProvider, isIncremental);
-                        return null;
-                    });
+//                        return null;
+//                    });
                 }
             }
         }
 
-        // 等待所有任务结束
-        waitableExecutor.waitForTasksWithQuickFail(true);
+//        // 等待所有任务结束
+//        waitableExecutor.waitForTasksWithQuickFail(true);
     }
 
     protected boolean checkJar(String jarName) {
