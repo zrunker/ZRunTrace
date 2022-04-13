@@ -46,9 +46,8 @@ class RunTraceExtension {
     // 是否开启Activity生命周期监测
     boolean isOpenLifeTrace = true
 
-    // Activity父类名称，如androidx/appcompat/app/AppCompatActivity
+    // Activity父类名称，如AppCompatActivity
     String lifeActivitySuperName = ""
-
 
     @Override
     String toString() {
