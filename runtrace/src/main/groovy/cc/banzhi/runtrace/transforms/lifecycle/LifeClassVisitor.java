@@ -34,10 +34,15 @@ public class LifeClassVisitor extends ClassVisitor {
                       String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
         this.className = name;
+        // superName：androidx/appcompat/app/AppCompatActivity
+        System.out.println("superName = " + superName);
         if (extension != null
                 && extension.getLifeActivitySuperName() != null
-                && "".equals(extension.getLifeActivitySuperName())) {
-            isExecute = extension.getLifeActivitySuperName().equals(superName);
+                && !"".equals(extension.getLifeActivitySuperName())) {
+            String lifeActivitySuperName = extension.getLifeActivitySuperName()
+                    .replaceAll("\\.", "/");
+            isExecute = superName != null &&
+                    superName.endsWith(lifeActivitySuperName);
         } else {
             isExecute = "android/support/v4/app/FragmentActivity".equals(superName)
                     || "androidx/appcompat/app/AppCompatActivity".equals(superName);
