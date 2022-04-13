@@ -1,6 +1,7 @@
 package cc.banzhi.zruntrace;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,13 +14,16 @@ import java.util.Map;
 import java.util.Set;
 
 import cc.banzhi.runtrace_api.RunTrace;
+import cc.banzhi.runtrace_api.RunTraceObserver;
 import cc.banzhi.runtrace_api.click.IClickTrace;
 import cc.banzhi.runtrace_api.code.CodeTrace;
 import cc.banzhi.runtrace_api.code.ICodeTrace;
+import cc.banzhi.runtrace_api.lifecycle.ILifeATrace;
 import cc.banzhi.testlib.TestX;
 
 @CodeTrace
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
+
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -41,6 +45,82 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e("MainActivity：", "runTime = tag：" + tag + " isUpload：" + isUpload);
             }
         });
+        RunTrace.addLifeATrace(new ILifeATrace() {
+            @Override
+            public void onACreate(String tag, Bundle savedInstanceState) {
+                Log.e("MainActivity：", "onACreate = tag：" + tag + " savedInstanceState：" + savedInstanceState);
+            }
+
+            @Override
+            public void onAStart(String tag) {
+
+            }
+
+            @Override
+            public void onAResume(String tag) {
+
+            }
+
+            @Override
+            public void onARestart(String tag) {
+
+            }
+
+            @Override
+            public void onAPause(String tag) {
+
+            }
+
+            @Override
+            public void onAStop(String tag) {
+
+            }
+
+            @Override
+            public void onADestroy(String tag) {
+
+            }
+
+            @Override
+            public void onANewIntent(String tag, Intent intent) {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
     }
 
     @Override

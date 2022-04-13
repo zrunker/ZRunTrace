@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'cc.banzhi.runtrace'
 
 runTraceConfig {
-    isOpenCodeTrace false
-    isOpenClickTrace false
+    isOpenCodeTrace true
+    isOpenClickTrace true
     isOpenLifeTrace true
-    lifeActivitySuperName "cc.banzhi.BaseActivity"
+    lifeActivitySuperName "cc.banzhi.zruntrace.BaseActivity"
 }
 
 android {

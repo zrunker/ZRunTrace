@@ -2,6 +2,7 @@ package cc.banzhi.runtrace_api;
 
 import cc.banzhi.runtrace_api.click.IClickTrace;
 import cc.banzhi.runtrace_api.code.ICodeTrace;
+import cc.banzhi.runtrace_api.lifecycle.ILifeATrace;
 
 /**
  * @program: ZRunTrace
@@ -15,6 +16,10 @@ public class RunTrace {
     }
 
     public static void addCodeTrace(ICodeTrace clickTrace) {
+        RunTraceObserver.addRunTrace(clickTrace);
+    }
+
+    public static void addLifeATrace(ILifeATrace clickTrace) {
         RunTraceObserver.addRunTrace(clickTrace);
     }
 }
