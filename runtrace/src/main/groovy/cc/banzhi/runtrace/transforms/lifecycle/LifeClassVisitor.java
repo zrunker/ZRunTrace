@@ -1,6 +1,5 @@
 package cc.banzhi.runtrace.transforms.lifecycle;
 
-import org.gradle.api.Project;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -17,12 +16,11 @@ public class LifeClassVisitor extends ClassVisitor {
     // 类名称
     private String className;
     private boolean isExecute;
-    private RunTraceExtension extension;
+    private final RunTraceExtension extension;
 
-    public LifeClassVisitor(int api, ClassVisitor classVisitor, Project project) {
+    public LifeClassVisitor(int api, ClassVisitor classVisitor, RunTraceExtension extension) {
         super(api, classVisitor);
-        extension = project.getExtensions().getByType(RunTraceExtension.class);
-        System.out.println(extension.toString());
+        this.extension = extension;
     }
 
     @Override

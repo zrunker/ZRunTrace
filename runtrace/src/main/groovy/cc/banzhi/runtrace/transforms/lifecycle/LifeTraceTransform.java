@@ -301,7 +301,7 @@ public class LifeTraceTransform extends BaseTransform {
         if (is != null && is.available() > 0) {
             ClassReader classReader = new ClassReader(is);
             ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
-            ClassVisitor classVisitor = new LifeClassVisitor(Opcodes.ASM7, classWriter, project);
+            ClassVisitor classVisitor = new LifeClassVisitor(Opcodes.ASM7, classWriter, getRunTraceExtension());
             classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
             return classWriter.toByteArray();
         }

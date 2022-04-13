@@ -1,6 +1,7 @@
 package cc.banzhi.runtrace
 
-
+import cc.banzhi.runtrace.transforms.click.ClickTraceTransform
+import cc.banzhi.runtrace.transforms.code.CodeTraceTransform
 import cc.banzhi.runtrace.transforms.lifecycle.LifeTraceTransform
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.plugins.AppPlugin
@@ -25,10 +26,10 @@ class RunTracePlugin implements Plugin<Project> {
                     System.out.println(extension.toString())
                 }
 
-//                // 代码层级埋点
-//                android.registerTransform(new CodeTraceTransform(project))
-//                // 点击事件埋点
-//                android.registerTransform(new ClickTraceTransform(project))
+                // 代码层级埋点
+                android.registerTransform(new CodeTraceTransform(project))
+                // 点击事件埋点
+                android.registerTransform(new ClickTraceTransform(project))
                 // Activity生命周期监测
                 android.registerTransform(new LifeTraceTransform(project))
             }
@@ -37,14 +38,14 @@ class RunTracePlugin implements Plugin<Project> {
 }
 
 class RunTraceExtension {
-    // 是否开启代码层级埋点
-    boolean isOpenCodeTrace = true
-
-    // 是否开启点击事件埋点
-    boolean isOpenClickTrace = true
-
-    // 是否开启Activity生命周期监测
-    boolean isOpenLifeTrace = true
+//    // 是否开启代码层级埋点
+//    boolean isOpenCodeTrace = true
+//
+//    // 是否开启点击事件埋点
+//    boolean isOpenClickTrace = true
+//
+//    // 是否开启Activity生命周期监测
+//    boolean isOpenLifeTrace = true
 
     // Activity父类名称，如AppCompatActivity
     String lifeActivitySuperName = ""

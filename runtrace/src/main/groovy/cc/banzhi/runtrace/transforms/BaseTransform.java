@@ -9,7 +9,6 @@ import com.android.build.api.transform.TransformInput;
 import com.android.build.api.transform.TransformInvocation;
 import com.android.build.api.transform.TransformOutputProvider;
 import com.android.build.gradle.internal.pipeline.TransformManager;
-import com.android.ide.common.internal.WaitableExecutor;
 
 import org.gradle.api.Project;
 
@@ -26,10 +25,14 @@ import cc.banzhi.runtrace.RunTraceExtension;
  * @create: 2022/3/30 3:57 下午
  **/
 public abstract class BaseTransform extends Transform {
-    protected final Project project;
+    private final Project project;
 
     public BaseTransform(Project project) {
         this.project = project;
+    }
+
+    public RunTraceExtension getRunTraceExtension() {
+        return project.getExtensions().getByType(RunTraceExtension.class);
     }
 
 //    /**

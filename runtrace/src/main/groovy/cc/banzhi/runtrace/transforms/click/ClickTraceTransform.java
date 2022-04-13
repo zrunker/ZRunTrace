@@ -27,6 +27,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
+import cc.banzhi.runtrace.RunTraceExtension;
 import cc.banzhi.runtrace.transforms.BaseTransform;
 
 /**
@@ -56,6 +57,16 @@ public class ClickTraceTransform extends BaseTransform {
     @Override
     protected void traverseJarInput(JarInput jarInput,
                                     TransformOutputProvider outputProvider, boolean isIncremental) throws IOException {
+
+//        RunTraceExtension extension = project.getExtensions().getByType(RunTraceExtension.class);
+//        if (extension.getIsOpenClickTrace()) {
+//            File inputFile = jarInput.getFile();
+//            // 通过TransformOutputProvider获取JarInput文件输出路径
+//            File outputFile = outputProvider.getContentLocation(
+//                    jarInput.getName(), jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
+//            FileUtils.copyFile(inputFile, outputFile);
+//        }
+
         if (jarInput == null) {
             return;
         }
@@ -190,6 +201,16 @@ public class ClickTraceTransform extends BaseTransform {
     @Override
     protected void traverseDirectoryInput(DirectoryInput dirInput,
                                           TransformOutputProvider outputProvider, boolean isIncremental) throws IOException {
+
+//        RunTraceExtension extension = project.getExtensions().getByType(RunTraceExtension.class);
+//        if (extension.getIsOpenClickTrace()) {
+//            File inputFile = dirInput.getFile();
+//            // 通过TransformOutputProvider获取DirectoryInput文件输出路径
+//            File outputFile = outputProvider.getContentLocation(
+//                    dirInput.getName(), dirInput.getContentTypes(), dirInput.getScopes(), Format.DIRECTORY);
+//            FileUtils.copyDirectory(inputFile, outputFile);
+//        }
+
         if (dirInput == null) {
             return;
         }
