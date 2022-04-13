@@ -27,6 +27,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
+import cc.banzhi.runtrace.RunTraceExtension;
 import cc.banzhi.runtrace.transforms.BaseTransform;
 
 /**
@@ -56,6 +57,12 @@ public class LifeTraceTransform extends BaseTransform {
     @Override
     protected void traverseJarInput(JarInput jarInput,
                                     TransformOutputProvider outputProvider, boolean isIncremental) throws IOException {
+        RunTraceExtension extension = getRunTraceExtension();
+        if (extension != null && !extension.isIsOpenLifeTrace()) {
+            defaultTraverseJarInput(jarInput, outputProvider);
+            return;
+        }
+
         if (jarInput == null) {
             return;
         }
@@ -190,6 +197,12 @@ public class LifeTraceTransform extends BaseTransform {
     @Override
     protected void traverseDirectoryInput(DirectoryInput dirInput,
                                           TransformOutputProvider outputProvider, boolean isIncremental) throws IOException {
+        RunTraceExtension extension = getRunTraceExtension();
+        if (extension != null && !extension.isIsOpenLifeTrace()) {
+            defaultTraverseDirectoryInput(dirInput, outputProvider);
+            return;
+        }
+
         if (dirInput == null) {
             return;
         }

@@ -1,6 +1,7 @@
 package cc.banzhi.runtrace.transforms;
 
 import com.android.build.api.transform.DirectoryInput;
+import com.android.build.api.transform.Format;
 import com.android.build.api.transform.JarInput;
 import com.android.build.api.transform.QualifiedContent;
 import com.android.build.api.transform.Transform;
@@ -10,8 +11,10 @@ import com.android.build.api.transform.TransformInvocation;
 import com.android.build.api.transform.TransformOutputProvider;
 import com.android.build.gradle.internal.pipeline.TransformManager;
 
+import org.apache.commons.io.FileUtils;
 import org.gradle.api.Project;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
@@ -144,6 +147,38 @@ public abstract class BaseTransform extends Transform {
 
 //        // 等待所有任务结束
 //        waitableExecutor.waitForTasksWithQuickFail(true);
+    }
+
+    // JarInput默认执行
+    public void defaultTraverseJarInput(JarInput jarInput,
+                                        TransformOutputProvider outputProvider) throws IOException {
+        if (jarInput == null) {
+            return;
+        }
+        File inputFile = jarInput.getFile();
+        if (inputFile == null || !inputFile.exists()) {
+            return;
+        }
+        // 通过TransformOutputProvider获取JarInput文件输出路径
+        File outputFile = outputProvider.getContentLocation(
+                jarInput.getName(), jarInput.getContentTypes(), jarInput.getScopes(), Format.JAR);
+        FileUtils.copyFile(inputFile, outputFile);
+    }
+
+    // DirectoryInput默认执行
+    public void defaultTraverseDirectoryInput(DirectoryInput dirInput,
+                                              TransformOutputProvider outputProvider) throws IOException {
+        if (dirInput == null) {
+            return;
+        }
+        File inputFile = dirInput.getFile();
+        if (inputFile == null || !inputFile.exists()) {
+            return;
+        }
+        // 通过TransformOutputProvider获取DirectoryInput文件输出路径
+        File outputFile = outputProvider.getContentLocation(
+                dirInput.getName(), dirInput.getContentTypes(), dirInput.getScopes(), Format.DIRECTORY);
+        FileUtils.copyDirectory(inputFile, outputFile);
     }
 
     protected boolean checkJar(String jarName) {

@@ -28,6 +28,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
+import cc.banzhi.runtrace.RunTraceExtension;
 import cc.banzhi.runtrace.transforms.BaseTransform;
 import cc.banzhi.runtrace.transforms.code.analyze.AnalyzeClassVisitor;
 import cc.banzhi.runtrace.transforms.code.generate.GenerateClassVisitor;
@@ -62,6 +63,12 @@ public class CodeTraceTransform extends BaseTransform {
     @Override
     protected void traverseJarInput(JarInput jarInput,
                                     TransformOutputProvider outputProvider, boolean isIncremental) throws IOException {
+        RunTraceExtension extension = getRunTraceExtension();
+        if (extension != null && !extension.isIsOpenCodeTrace()) {
+            defaultTraverseJarInput(jarInput, outputProvider);
+            return;
+        }
+
         if (jarInput == null) {
             return;
         }
@@ -197,6 +204,12 @@ public class CodeTraceTransform extends BaseTransform {
     @Override
     protected void traverseDirectoryInput(DirectoryInput dirInput,
                                           TransformOutputProvider outputProvider, boolean isIncremental) throws IOException {
+        RunTraceExtension extension = getRunTraceExtension();
+        if (extension != null && !extension.isIsOpenCodeTrace()) {
+            defaultTraverseDirectoryInput(dirInput, outputProvider);
+            return;
+        }
+
         if (dirInput == null) {
             return;
         }
